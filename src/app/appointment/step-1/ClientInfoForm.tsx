@@ -3,6 +3,7 @@
 import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
 import { useBookingStore } from "../bookingStore";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ClientInfoFormValues {
   contactName: string;
@@ -28,6 +29,7 @@ export default function ClientInfoForm() {
   const setClientInfo = useBookingStore((s) => s.setClientInfo);
   const setVehicleInfo = useBookingStore((s) => s.setVehicleInfo);
   const [manual, setManual] = useState(false);
+  const router = useRouter();
 
   const { control, handleSubmit, setValue, watch } = useForm<ClientInfoFormValues>({
     defaultValues: {
@@ -70,6 +72,7 @@ export default function ClientInfoForm() {
       plate: data.plate,
       type: data.type,
     });
+    router.push("/appointment/step-2");
   };
 
   return (
