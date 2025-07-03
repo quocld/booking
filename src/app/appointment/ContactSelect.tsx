@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ContactPickerModal from "./ContactPickerModal";
 import AddContactModal from "./AddContactModal";
 import type { Contact } from "./ContactPickerModal";
@@ -9,13 +9,15 @@ interface ContactSelectProps {
   label?: string;
   contacts: Contact[];
   loading?: boolean;
-  onAddContact: (data: { name: string; email?: string; phone?: string }) => void;
+  onAddContact: (data: { name: string; email?: string; phone?: string }) => Promise<Contact | undefined>;
+  newContactId?: string | null;
 }
 
-const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts, loading, onAddContact }) => {
+const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts, loading, onAddContact, newContactId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(value || null);
+  const [pendingSelectId, setPendingSelectId] = useState<string | null>(null);
 
   // Handler for when a contact is selected in the modal
   const handleModalSelect = (contact: Contact) => {
@@ -26,15 +28,35 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts
 
   // Handler for adding a new contact
   const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
-    await onAddContact(data);
+    const newContact = await onAddContact(data);
     setAddModalOpen(false);
-    // Sau khi thêm, chọn contact mới nhất (giả sử là cuối danh sách)
-    if (contacts.length > 0) {
-      const newContact = contacts[contacts.length - 1];
-      setSelectedContact(newContact);
-      onSelect(newContact);
+    if (newContact && typeof newContact === 'object' && 'id' in newContact) {
+      setPendingSelectId(newContact.id as string);
     }
   };
+
+  // Khi contacts thay đổi, nếu có pendingSelectId thì set selectedContact
+  useEffect(() => {
+    if (pendingSelectId && contacts.length > 0) {
+      const found = contacts.find(c => c.id === pendingSelectId);
+      if (found) {
+        setSelectedContact(found);
+        onSelect(found);
+        setPendingSelectId(null);
+      }
+    }
+  }, [contacts, pendingSelectId, onSelect]);
+
+  // Khi newContactId thay đổi, nếu có newContactId thì set selectedContact
+  useEffect(() => {
+    if (newContactId && contacts.length > 0) {
+      const found = contacts.find(c => c.id === newContactId);
+      if (found) {
+        setSelectedContact(found);
+        onSelect(found);
+      }
+    }
+  }, [contacts, newContactId, onSelect]);
 
   return (
     <div className="w-full">

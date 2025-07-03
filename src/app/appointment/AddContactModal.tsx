@@ -3,7 +3,6 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm } from "react-hook-form";
-import { useBookingStore } from "./bookingStore";
 
 interface AddContactModalProps {
   open: boolean;
@@ -20,7 +19,6 @@ interface ContactFormValues {
 }
 
 export default function AddContactModal({ open, onClose, onAddContact }: AddContactModalProps) {
-  const setClientInfo = useBookingStore((s) => s.setClientInfo);
   const {
     register,
     handleSubmit,
@@ -63,12 +61,9 @@ export default function AddContactModal({ open, onClose, onAddContact }: AddCont
       return;
     }
     clearErrors(["email", "phone", "additionalPhone"]);
-    setClientInfo({
-      contactName: data.name,
-      email: data.email,
-      phone: data.phone,
-    });
-    if (onAddContact) onAddContact(data);
+    if (onAddContact) {
+      await onAddContact(data);
+    }
     reset();
     onClose();
   };

@@ -37,6 +37,15 @@ export function makeMirageServer() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (schema as any).vehicles.all().models;
       });
+
+      // Passthrough cho các route Next.js và các route không phải API Mirage
+      this.passthrough('/_next/*');
+      this.passthrough('/appointment/*');
+      this.passthrough('/api/auth/*');
+      this.passthrough((request) => {
+        // Cho phép tất cả request không phải API của Mirage
+        return !request.url.includes('/api/contacts') && !request.url.includes('/api/vehicles');
+      });
     },
   });
 } 

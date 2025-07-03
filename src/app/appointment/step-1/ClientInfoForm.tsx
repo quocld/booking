@@ -47,18 +47,22 @@ export default function ClientInfoForm() {
   const [contactsError, setContactsError] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [newContactId, setNewContactId] = useState<string | null>(null);
 
-  const { control, handleSubmit, setValue, watch, formState: { errors } } =
+  const clientInfo = useBookingStore((s) => s.clientInfo);
+  const vehicleInfo = useBookingStore((s) => s.vehicleInfo);
+
+  const { control, handleSubmit, setValue, watch, formState: { errors }, reset } =
     useForm<ClientInfoFormValues>({
       defaultValues: {
-        contactName: "",
-        email: "",
-        phone: "",
-        make: "",
-        model: "",
-        plate: "",
-        type: "",
-        year: "",
+        contactName: clientInfo.contactName,
+        email: clientInfo.email,
+        phone: clientInfo.phone,
+        make: vehicleInfo.make,
+        model: vehicleInfo.model,
+        plate: vehicleInfo.plate,
+        type: vehicleInfo.type,
+        year: vehicleInfo.year || "",
       },
     });
 
@@ -83,7 +87,7 @@ export default function ClientInfoForm() {
   }, []);
 
   const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
-    await fetch("/api/contacts", {
+    const res = await fetch("/api/contacts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -92,7 +96,10 @@ export default function ClientInfoForm() {
         phone: data.phone || "",
       }),
     });
+    const newContact = await res.json();
+    setNewContactId(newContact.id);
     await fetchContacts();
+    return newContact;
   };
 
   React.useEffect(() => {
@@ -105,6 +112,20 @@ export default function ClientInfoForm() {
       }
     }
   }, [selectedContact, setValue, contacts]);
+
+  // Reset form mỗi khi clientInfo hoặc vehicleInfo thay đổi
+  useEffect(() => {
+    reset({
+      contactName: clientInfo.contactName,
+      email: clientInfo.email,
+      phone: clientInfo.phone,
+      make: vehicleInfo.make,
+      model: vehicleInfo.model,
+      plate: vehicleInfo.plate,
+      type: vehicleInfo.type,
+      year: vehicleInfo.year || "",
+    });
+  }, [clientInfo, vehicleInfo, reset]);
 
   const onSubmit = async (data: ClientInfoFormValues) => {
     setSubmitLoading(true);
@@ -120,11 +141,7 @@ export default function ClientInfoForm() {
         model: data.model,
         plate: data.plate,
         type: data.type,
-      });
-      await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        year: data.year,
       });
       goToNextStep();
       router.push("/appointment/step-2");
@@ -157,6 +174,29 @@ export default function ClientInfoForm() {
             rules={{ required: "Please select a contact" }}
             render={({ field }) => {
               const selected = contacts.find((c) => c.id === field.value);
+              if (selected) {
+                // Compose info string, skip empty fields
+                const info = [selected.name, selected.email, selected.phone].filter(Boolean).join(" | ");
+                return (
+                  <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded px-3 py-2">
+                    <span className="text-gray-100 text-sm font-medium">Client {info}</span>
+                    <button
+                      type="button"
+                      className="ml-2 text-gray-400 hover:text-red-500 text-lg font-bold focus:outline-none"
+                      aria-label="Remove contact"
+                      onClick={() => {
+                        field.onChange("");
+                        setValue("email", "");
+                        setValue("phone", "");
+                        setManual(false);
+                        setNewContactId(null);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              }
               return (
                 <ContactSelect
                   value={selected as Contact | undefined}
@@ -165,10 +205,12 @@ export default function ClientInfoForm() {
                     setValue("email", contact.email || "");
                     setValue("phone", contact.phone || "");
                     setManual(false);
+                    setNewContactId(null);
                   }}
                   contacts={contacts}
                   loading={contactsLoading}
                   onAddContact={handleAddContact}
+                  newContactId={newContactId}
                 />
               );
             }}
@@ -461,13 +503,17 @@ export default function ClientInfoForm() {
           </div>
         )}
       </div>
-      <button
-        type="submit"
-        className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow transition-colors border border-blue-700"
-        disabled={submitLoading}
-      >
-        {submitLoading ? "Submitting..." : "Continue"}
-      </button>
+      {/* Nút Next nhỏ, góc phải */}
+      <div className="flex justify-end mt-6">
+        <button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded shadow transition-colors border border-blue-700 text-sm"
+          style={{ minWidth: "80px" }}
+          disabled={submitLoading}
+        >
+          {submitLoading ? "..." : "Next"}
+        </button>
+      </div>
       {submitError && <div className="text-red-500 text-sm mt-2">{submitError}</div>}
     </form>
   );
