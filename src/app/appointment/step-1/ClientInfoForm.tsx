@@ -190,171 +190,176 @@ export default function ClientInfoForm() {
         </div>
       )}
       {/* Vehicle Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">
-            Year <span className="text-red-500">*</span>
-          </label>
-          <Controller
-            name="year"
-            control={control}
-            rules={{ required: "Please select a year" }}
-            render={({ field }) => {
-              const filteredYears = years.filter((y) => y.includes(yearSearch));
-              return (
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={field.value || ""}
-                    onFocus={() => setYearDropdownOpen(true)}
-                    onClick={() => setYearDropdownOpen(true)}
-                    placeholder="Select year"
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    readOnly
-                  />
-                  {yearDropdownOpen && (
-                    <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
-                      <div className="p-2">
-                        <input
-                          type="text"
-                          value={yearSearch}
-                          onChange={(e) => setYearSearch(e.target.value)}
-                          placeholder="Search year..."
-                          className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                          autoFocus
-                        />
-                      </div>
-                      {filteredYears.length > 0 ? (
-                        filteredYears.map((y) => (
-                          <div
-                            key={y}
-                            className="px-3 py-2 cursor-pointer hover:bg-blue-600 hover:text-white"
-                            onMouseDown={() => {
-                              field.onChange(y);
-                              setYearSearch("");
-                              setYearDropdownOpen(false);
-                            }}
-                          >
-                            {y}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-3 py-2 text-gray-400">
-                          No years found
+      <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 mt-4">
+        <h3 className="text-lg font-semibold text-gray-200 mb-4">Vehicle Detail</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Year <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="year"
+              control={control}
+              rules={{ required: "Please select a year" }}
+              render={({ field }) => {
+                const filteredYears = years.filter((y) => y.includes(yearSearch));
+                return (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={field.value || ""}
+                      onFocus={() => setYearDropdownOpen(true)}
+                      onClick={() => setYearDropdownOpen(true)}
+                      placeholder="Select year"
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      readOnly
+                    />
+                    {yearDropdownOpen && (
+                      <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
+                        <div className="p-2">
+                          <input
+                            type="text"
+                            value={yearSearch}
+                            onChange={(e) => setYearSearch(e.target.value)}
+                            placeholder="Search year..."
+                            className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                            autoFocus
+                          />
                         </div>
-                      )}
-                    </div>
-                  )}
-                  {errors.year && (
-                    <p className="text-red-500 text-xs mt-1">{errors.year.message}</p>
-                  )}
-                </div>
-              );
-            }}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">
-            Make <span className="text-red-500">*</span>
-          </label>
-          <Controller
-            name="make"
-            control={control}
-            rules={{ required: "Please select a make" }}
-            render={({
-              field,
-            }: {
-              field: ControllerRenderProps<ClientInfoFormValues, "make">;
-            }) => (
-              <>
-                <select
-                  {...field}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="" disabled>
-                    Select make
-                  </option>
-                  {makes.map((make) => (
-                    <option key={make} value={make}>
-                      {make}
+                        {filteredYears.length > 0 ? (
+                          filteredYears.map((y) => (
+                            <div
+                              key={y}
+                              className="px-3 py-2 cursor-pointer hover:bg-blue-600 hover:text-white"
+                              onMouseDown={() => {
+                                field.onChange(y);
+                                setYearSearch("");
+                                setYearDropdownOpen(false);
+                              }}
+                            >
+                              {y}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-gray-400">
+                            No years found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {errors.year && (
+                      <p className="text-red-500 text-xs mt-1">{errors.year.message}</p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Make <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="make"
+              control={control}
+              rules={{ required: "Please select a make" }}
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "make">;
+              }) => (
+                <>
+                  <select
+                    {...field}
+                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="" disabled>
+                      Select make
                     </option>
-                  ))}
-                </select>
-                {errors.make && (
-                  <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
-                )}
-              </>
-            )}
-          />
+                    {makes.map((make) => (
+                      <option key={make} value={make}>
+                        {make}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.make && (
+                    <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </div>
         </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-300">
-          Model <span className="text-red-500">*</span>
-        </label>
-        <Controller
-          name="model"
-          control={control}
-          rules={{ required: "Please select a model" }}
-          render={({
-            field,
-          }: {
-            field: ControllerRenderProps<ClientInfoFormValues, "model">;
-          }) => (
-            <>
-              <select
-                {...field}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="" disabled>
-                  Select model
-                </option>
-                {models.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
-              {errors.model && (
-                <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Model <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="model"
+              control={control}
+              rules={{ required: "Please select a model" }}
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "model">;
+              }) => (
+                <>
+                  <select
+                    {...field}
+                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="" disabled>
+                      Select model
+                    </option>
+                    {models.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.model && (
+                    <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+                  )}
+                </>
               )}
-            </>
-          )}
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-300">
-          Type <span className="text-red-500">*</span>
-        </label>
-        <Controller
-          name="type"
-          control={control}
-          rules={{ required: "Please select a type" }}
-          render={({
-            field,
-          }: {
-            field: ControllerRenderProps<ClientInfoFormValues, "type">;
-          }) => (
-            <>
-              <select
-                {...field}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="" disabled>
-                  Select type
-                </option>
-                {types.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-              {errors.type && (
-                <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Vehicle Type <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="type"
+              control={control}
+              rules={{ required: "Please select a type" }}
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "type">;
+              }) => (
+                <>
+                  <select
+                    {...field}
+                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="" disabled>
+                      Select type
+                    </option>
+                    {types.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.type && (
+                    <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>
+                  )}
+                </>
               )}
-            </>
-          )}
-        />
+            />
+          </div>
+        </div>
       </div>
       <button
         type="submit"
