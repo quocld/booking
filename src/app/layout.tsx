@@ -1,21 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
-declare global {
-  interface Window {
-    __MIRAGE__?: boolean;
-  }
-}
-
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  // Dynamically import to avoid SSR issues
-  import('../mirageServer').then(({ makeMirageServer }) => {
-    if (!window.__MIRAGE__) {
-      makeMirageServer();
-      window.__MIRAGE__ = true;
-    }
-  });
-}
+import SidebarLayout from "./SidebarLayout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,8 +14,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-gray-950 text-white min-h-screen p-8">
-        {children}
+      <body className="bg-gray-950 text-white min-h-screen">
+        <SidebarLayout>{children}</SidebarLayout>
       </body>
     </html>
   );
