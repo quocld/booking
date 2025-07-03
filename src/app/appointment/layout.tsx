@@ -25,11 +25,11 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
   return (
     <div>
       <div>{stepDescription}</div>
-      <div className="flex max-w-5xl mx-auto mt-8">
-        <div className="flex-1 bg-gray-900 rounded-l-lg shadow-lg p-8">
+      <div className="flex flex-col md:flex-row max-w-5xl mx-auto mt-8 gap-4 md:gap-0">
+        <div className="flex-1 bg-gray-900 rounded-t-lg md:rounded-l-lg md:rounded-tr-none shadow-lg p-4 md:p-8">
           {children}
         </div>
-        <aside className="w-56 bg-gray-950 rounded-r-lg shadow-lg p-8 flex flex-col items-center">
+        <aside className="w-full md:w-56 bg-gray-950 rounded-b-lg md:rounded-r-lg md:rounded-bl-none shadow-lg p-4 md:p-8 flex flex-col items-center">
           <nav className="flex flex-col gap-8 w-full">
             {steps.map((stepObj, idx) => (
               <div key={stepObj.label} className="flex items-center gap-4">

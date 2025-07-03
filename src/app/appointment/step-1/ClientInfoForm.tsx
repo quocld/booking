@@ -4,6 +4,8 @@ import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
 import { useBookingStore } from "../bookingStore";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import ContactSelect from "../ContactSelect";
+import type { Contact } from "../ContactPickerModal";
 
 interface ClientInfoFormValues {
   contactName: string;
@@ -15,12 +17,6 @@ interface ClientInfoFormValues {
   type: string;
 }
 
-const contacts = [
-  { label: "John Doe", value: "John Doe", email: "john@example.com", phone: "123-456-7890" },
-  { label: "Jane Smith", value: "Jane Smith", email: "jane@example.com", phone: "987-654-3210" },
-  { label: "Add manually", value: "manual" },
-];
-
 const makes = ["Toyota", "Honda", "Ford", "Tesla"];
 const models = ["Corolla", "Civic", "F-150", "Model 3"];
 const types = ["Sedan", "SUV", "Truck", "Electric"];
@@ -28,8 +24,15 @@ const types = ["Sedan", "SUV", "Truck", "Electric"];
 export default function ClientInfoForm() {
   const setClientInfo = useBookingStore((s) => s.setClientInfo);
   const setVehicleInfo = useBookingStore((s) => s.setVehicleInfo);
+  const goToNextStep = useBookingStore((s) => s.goToNextStep);
   const [manual, setManual] = useState(false);
   const router = useRouter();
+
+  // Make contacts stateful so we can add new ones
+  const [contacts] = useState([
+    { id: "1", name: "John Doe", email: "john@example.com", phone: "123-456-7890" },
+    { id: "2", name: "Jane Smith", email: "jane@example.com", phone: "987-654-3210" },
+  ]);
 
   const { control, handleSubmit, setValue, watch } = useForm<ClientInfoFormValues>({
     defaultValues: {
@@ -46,19 +49,15 @@ export default function ClientInfoForm() {
   const selectedContact = watch("contactName");
 
   React.useEffect(() => {
-    if (selectedContact && selectedContact !== "manual") {
-      const found = contacts.find((c) => c.value === selectedContact);
+    if (selectedContact) {
+      const found = contacts.find((c) => c.id === selectedContact);
       if (found) {
         setValue("email", found.email || "");
         setValue("phone", found.phone || "");
         setManual(false);
       }
-    } else if (selectedContact === "manual") {
-      setValue("email", "");
-      setValue("phone", "");
-      setManual(true);
     }
-  }, [selectedContact, setValue]);
+  }, [selectedContact, setValue, contacts]);
 
   const onSubmit = (data: ClientInfoFormValues) => {
     setClientInfo({
@@ -72,33 +71,34 @@ export default function ClientInfoForm() {
       plate: data.plate,
       type: data.type,
     });
+    goToNextStep();
     router.push("/appointment/step-2");
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Contact Selection */}
+      {/* Contact Selection with Add Button */}
       <div>
         <label className="block text-sm font-medium mb-1 text-gray-300">Contact</label>
         <Controller
           name="contactName"
           control={control}
-          render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "contactName"> }) => (
-            <select
-              {...field}
-              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="" disabled>Select contact</option>
-              {contacts.map((c) => (
-                <option key={c.value} value={c.value}>{c.label}</option>
-              ))}
-            </select>
+          render={({ field }) => (
+            <ContactSelect
+              value={contacts.find((c) => c.id === field.value) as Contact | undefined}
+              onSelect={(contact) => {
+                field.onChange(contact.id);
+                setValue("email", contact.email || "");
+                setValue("phone", contact.phone || "");
+                setManual(false);
+              }}
+            />
           )}
         />
       </div>
       {/* Email & Phone (manual only) */}
       {manual && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-300">Email</label>
             <Controller
@@ -132,7 +132,7 @@ export default function ClientInfoForm() {
         </div>
       )}
       {/* Vehicle Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-300">Make</label>
           <Controller

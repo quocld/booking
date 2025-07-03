@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { useBookingStore } from "./bookingStore";
 
@@ -47,24 +47,28 @@ export default function AddContactModal({ open, onClose, onAddContact }: AddCont
   };
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100"
           leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
-        </Transition.Child>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Transition.Child
+        </TransitionChild>
+        <div className="fixed inset-0 z-50">
+          <TransitionChild
             as={Fragment}
-            enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+            enter="transform transition ease-in-out duration-300"
+            enterFrom="translate-x-full opacity-0"
+            enterTo="translate-x-0 opacity-100"
+            leave="transform transition ease-in-out duration-200"
+            leaveFrom="translate-x-0 opacity-100"
+            leaveTo="translate-x-full opacity-0"
           >
-            <Dialog.Panel className="w-full max-w-md rounded-lg bg-gray-900 p-6 shadow-xl border border-gray-700">
+            <Dialog.Panel className="fixed right-0 top-0 h-full w-full md:max-w-md bg-gray-900 p-4 md:p-6 shadow-xl border-l border-gray-700 flex flex-col z-50">
               <Dialog.Title className="text-lg font-semibold text-gray-100 mb-4">Add New Contact</Dialog.Title>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex-1 flex flex-col">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-300">Name</label>
                   <input
@@ -123,9 +127,9 @@ export default function AddContactModal({ open, onClose, onAddContact }: AddCont
                 </div>
               </form>
             </Dialog.Panel>
-          </Transition.Child>
+          </TransitionChild>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 } 
