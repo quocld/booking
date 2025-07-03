@@ -21,6 +21,7 @@ interface BookingState {
   setVehicleInfo: (info: VehicleInfo) => void;
   goToNextStep: () => void;
   resetBooking: () => void;
+  setStep: (step: number) => void;
 }
 
 const initialClientInfo: ClientInfo = {
@@ -48,4 +49,5 @@ export const useBookingStore = create<BookingState>((set) => ({
     vehicleInfo: initialVehicleInfo,
     step: 1,
   }),
+  setStep: (step) => set({ step }),
 })); 
