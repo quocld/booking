@@ -38,6 +38,9 @@ export default function ClientInfoForm() {
   const [yearSearch, setYearSearch] = useState("");
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
 
+  // State for manual vehicle entry
+  const [manualVehicle, setManualVehicle] = useState(false);
+
   // Make contacts stateful so we can add new ones
   const [contacts] = useState([
     {
@@ -108,26 +111,46 @@ export default function ClientInfoForm() {
           name="contactName"
           control={control}
           rules={{ required: "Please select a contact" }}
-          render={({ field }) => (
-            <>
-              <ContactSelect
-                value={
-                  contacts.find((c) => c.id === field.value) as
-                    | Contact
-                    | undefined
-                }
-                onSelect={(contact) => {
-                  field.onChange(contact.id);
-                  setValue("email", contact.email || "");
-                  setValue("phone", contact.phone || "");
-                  setManual(false);
-                }}
-              />
-              {errors.contactName && (
-                <p className="text-red-500 text-xs mt-1">{errors.contactName.message}</p>
-              )}
-            </>
-          )}
+          render={({ field }) => {
+            const selected = contacts.find((c) => c.id === field.value);
+            if (selected) {
+              return (
+                <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded px-3 py-2">
+                  <span className="text-gray-100 font-medium">Client</span>
+                  <span className="text-gray-200">{selected.name} | {selected.email} | {selected.phone}</span>
+                  <button
+                    type="button"
+                    className="ml-2 text-gray-400 hover:text-red-500 font-bold text-lg"
+                    onClick={() => {
+                      field.onChange("");
+                      setValue("email", "");
+                      setValue("phone", "");
+                      setManual(false);
+                    }}
+                    aria-label="Remove contact"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            }
+            return (
+              <>
+                <ContactSelect
+                  value={selected as Contact | undefined}
+                  onSelect={(contact) => {
+                    field.onChange(contact.id);
+                    setValue("email", contact.email || "");
+                    setValue("phone", contact.phone || "");
+                    setManual(false);
+                  }}
+                />
+                {errors.contactName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.contactName.message}</p>
+                )}
+              </>
+            );
+          }}
         />
       </div>
       {/* Email & Phone (manual only) */}
@@ -202,6 +225,21 @@ export default function ClientInfoForm() {
               control={control}
               rules={{ required: "Please select a year" }}
               render={({ field }) => {
+                if (manualVehicle) {
+                  return (
+                    <>
+                      <input
+                        type="text"
+                        {...field}
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter year"
+                      />
+                      {errors.year && (
+                        <p className="text-red-500 text-xs mt-1">{errors.year.message}</p>
+                      )}
+                    </>
+                  );
+                }
                 const filteredYears = years.filter((y) => y.includes(yearSearch));
                 return (
                   <div className="relative">
@@ -263,29 +301,39 @@ export default function ClientInfoForm() {
               name="make"
               control={control}
               rules={{ required: "Please select a make" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "make">;
-              }) => (
-                <>
-                  <select
-                    {...field}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="" disabled>
-                      Select make
-                    </option>
-                    {makes.map((make) => (
-                      <option key={make} value={make}>
-                        {make}
+              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "make"> }) => (
+                manualVehicle ? (
+                  <>
+                    <input
+                      type="text"
+                      {...field}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter make"
+                    />
+                    {errors.make && (
+                      <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <select
+                      {...field}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="" disabled>
+                        Select make
                       </option>
-                    ))}
-                  </select>
-                  {errors.make && (
-                    <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
-                  )}
-                </>
+                      {makes.map((make) => (
+                        <option key={make} value={make}>
+                          {make}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.make && (
+                      <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
+                    )}
+                  </>
+                )
               )}
             />
           </div>
@@ -299,29 +347,39 @@ export default function ClientInfoForm() {
               name="model"
               control={control}
               rules={{ required: "Please select a model" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "model">;
-              }) => (
-                <>
-                  <select
-                    {...field}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="" disabled>
-                      Select model
-                    </option>
-                    {models.map((model) => (
-                      <option key={model} value={model}>
-                        {model}
+              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "model"> }) => (
+                manualVehicle ? (
+                  <>
+                    <input
+                      type="text"
+                      {...field}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter model"
+                    />
+                    {errors.model && (
+                      <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <select
+                      {...field}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="" disabled>
+                        Select model
                       </option>
-                    ))}
-                  </select>
-                  {errors.model && (
-                    <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
-                  )}
-                </>
+                      {models.map((model) => (
+                        <option key={model} value={model}>
+                          {model}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.model && (
+                      <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+                    )}
+                  </>
+                )
               )}
             />
           </div>
@@ -333,11 +391,7 @@ export default function ClientInfoForm() {
               name="type"
               control={control}
               rules={{ required: "Please select a type" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "type">;
-              }) => (
+              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "type"> }) => (
                 <>
                   <select
                     {...field}
@@ -360,6 +414,30 @@ export default function ClientInfoForm() {
             />
           </div>
         </div>
+        {/* Manual vehicle entry link */}
+        {!manualVehicle && (
+          <div className="mt-2">
+            <button
+              type="button"
+              className="text-blue-400 underline text-sm hover:text-blue-600"
+              onClick={() => setManualVehicle(true)}
+            >
+              Can&apos;t find a vehicle? Enter it manually.
+            </button>
+          </div>
+        )}
+        {/* Link to switch back to dropdown mode */}
+        {manualVehicle && (
+          <div className="mt-4">
+            <button
+              type="button"
+              className="text-blue-400 underline text-sm hover:text-blue-600"
+              onClick={() => setManualVehicle(false)}
+            >
+              I prefer to pick from the available Vehicle options.
+            </button>
+          </div>
+        )}
       </div>
       <button
         type="submit"
