@@ -17,48 +17,24 @@ export interface Contact {
   phone: string;
 }
 
-const MOCK_CONTACTS: Contact[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "123-456-7890",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "987-654-3210",
-  },
-  {
-    id: "3",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    phone: "555-123-4567",
-  },
-  {
-    id: "4",
-    name: "Bob Brown",
-    email: "bob@example.com",
-    phone: "555-987-6543",
-  },
-];
-
 interface ContactPickerModalProps {
   open: boolean;
   onClose: () => void;
   onSelect?: (contact: Contact) => void;
+  contacts: Contact[];
+  loading?: boolean;
 }
 
 export default function ContactPickerModal({
   open,
   onClose,
   onSelect,
+  contacts,
+  loading,
 }: ContactPickerModalProps) {
   const setClientInfo = useBookingStore((s) => s.setClientInfo);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const contacts = MOCK_CONTACTS;
 
   const filteredContacts = useMemo(() => {
     return contacts.filter(
@@ -67,7 +43,7 @@ export default function ContactPickerModal({
         c.email.toLowerCase().includes(search.toLowerCase()) ||
         c.phone.includes(search)
     );
-  }, [search]);
+  }, [search, contacts]);
 
   const handleConfirm = () => {
     const contact = contacts.find((c) => c.id === selectedId);
@@ -172,60 +148,64 @@ export default function ContactPickerModal({
                 </div>
               </div>
               <div className="overflow-x-auto max-h-72 px-2 md:px-6 pb-2">
-                <table className="min-w-full text-sm text-gray-300">
-                  <thead>
-                    <tr className="bg-gray-800">
-                      <th className="px-4 py-2 text-left">Name</th>
-                      <th className="px-4 py-2 text-left">Email</th>
-                      <th className="px-4 py-2 text-left">Phone</th>
-                      <th className="px-4 py-2 text-center">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredContacts.map((contact) => (
-                      <tr
-                        key={contact.id}
-                        className={`cursor-pointer transition-colors ${
-                          selectedId === contact.id
-                            ? "bg-blue-900/60"
-                            : "hover:bg-gray-800"
-                        }`}
-                        onClick={() => setSelectedId(contact.id)}
-                        aria-selected={selectedId === contact.id}
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ")
-                            setSelectedId(contact.id);
-                        }}
-                      >
-                        <td className="px-4 py-2 font-medium">
-                          {contact.name}
-                        </td>
-                        <td className="px-4 py-2">{contact.email}</td>
-                        <td className="px-4 py-2">{contact.phone}</td>
-                        <td className="px-4 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedId === contact.id}
-                            onChange={() => setSelectedId(contact.id)}
-                            aria-label={`Select ${contact.name}`}
-                            className="form-checkbox h-5 w-5 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
-                          />
-                        </td>
+                {loading ? (
+                  <div className="text-gray-400 text-sm p-4">Loading contacts...</div>
+                ) : (
+                  <table className="min-w-full text-sm text-gray-300">
+                    <thead>
+                      <tr className="bg-gray-800">
+                        <th className="px-4 py-2 text-left">Name</th>
+                        <th className="px-4 py-2 text-left">Email</th>
+                        <th className="px-4 py-2 text-left">Phone</th>
+                        <th className="px-4 py-2 text-center">Action</th>
                       </tr>
-                    ))}
-                    {filteredContacts.length === 0 && (
-                      <tr>
-                        <td
-                          colSpan={4}
-                          className="px-4 py-6 text-center text-gray-500"
+                    </thead>
+                    <tbody>
+                      {filteredContacts.map((contact) => (
+                        <tr
+                          key={contact.id}
+                          className={`cursor-pointer transition-colors ${
+                            selectedId === contact.id
+                              ? "bg-blue-900/60"
+                              : "hover:bg-gray-800"
+                          }`}
+                          onClick={() => setSelectedId(contact.id)}
+                          aria-selected={selectedId === contact.id}
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ")
+                              setSelectedId(contact.id);
+                          }}
                         >
-                          No contacts found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                          <td className="px-4 py-2 font-medium">
+                            {contact.name}
+                          </td>
+                          <td className="px-4 py-2">{contact.email}</td>
+                          <td className="px-4 py-2">{contact.phone}</td>
+                          <td className="px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={selectedId === contact.id}
+                              onChange={() => setSelectedId(contact.id)}
+                              aria-label={`Select ${contact.name}`}
+                              className="form-checkbox h-5 w-5 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredContacts.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="px-4 py-6 text-center text-gray-500"
+                          >
+                            No contacts found.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                )}
               </div>
               <div className="flex justify-between items-center px-6 py-4 border-t border-gray-800 gap-2">
                 <button

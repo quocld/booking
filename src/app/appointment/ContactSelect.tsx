@@ -7,17 +7,14 @@ interface ContactSelectProps {
   value?: Contact | null;
   onSelect: (contact: Contact) => void;
   label?: string;
+  contacts: Contact[];
+  loading?: boolean;
+  onAddContact: (data: { name: string; email?: string; phone?: string }) => void;
 }
 
-const DEFAULT_CONTACTS: Contact[] = [
-  { id: "1", name: "John Doe", email: "john@example.com", phone: "123-456-7890" },
-  { id: "2", name: "Jane Smith", email: "jane@example.com", phone: "987-654-3210" },
-];
-
-const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect }) => {
+const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts, loading, onAddContact }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [contacts, setContacts] = useState<Contact[]>(DEFAULT_CONTACTS);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(value || null);
 
   // Handler for when a contact is selected in the modal
@@ -28,17 +25,15 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect }) => {
   };
 
   // Handler for adding a new contact
-  const handleAddContact = (data: { name: string; email?: string; phone?: string }) => {
-    const newContact: Contact = {
-      id: (contacts.length + 1).toString(),
-      name: data.name,
-      email: data.email || "",
-      phone: data.phone || "",
-    };
-    setContacts((prev) => [...prev, newContact]);
+  const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
+    await onAddContact(data);
     setAddModalOpen(false);
-    setSelectedContact(newContact);
-    onSelect(newContact);
+    // Sau khi thêm, chọn contact mới nhất (giả sử là cuối danh sách)
+    if (contacts.length > 0) {
+      const newContact = contacts[contacts.length - 1];
+      setSelectedContact(newContact);
+      onSelect(newContact);
+    }
   };
 
   return (
@@ -73,6 +68,8 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect }) => {
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           onSelect={handleModalSelect}
+          contacts={contacts}
+          loading={loading}
         />
       )}
       {/* Add Contact Modal */}

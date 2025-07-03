@@ -2,7 +2,7 @@
 
 import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
 import { useBookingStore } from "../bookingStore";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ContactSelect from "../ContactSelect";
 import type { Contact } from "../ContactPickerModal";
@@ -42,20 +42,11 @@ export default function ClientInfoForm() {
   const [manualVehicle, setManualVehicle] = useState(false);
 
   // Make contacts stateful so we can add new ones
-  const [contacts] = useState([
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123-456-7890",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "987-654-3210",
-    },
-  ]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
+  const [contactsError, setContactsError] = useState<string | null>(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { control, handleSubmit, setValue, watch, formState: { errors } } =
     useForm<ClientInfoFormValues>({
@@ -73,6 +64,37 @@ export default function ClientInfoForm() {
 
   const selectedContact = watch("contactName");
 
+  const fetchContacts = async () => {
+    setContactsLoading(true);
+    setContactsError(null);
+    try {
+      const res = await fetch("/api/contacts");
+      if (!res.ok) throw new Error("Failed to fetch contacts");
+      setContacts(await res.json());
+    } catch (err) {
+      setContactsError(err instanceof Error ? err.message : "Failed to fetch contacts");
+    } finally {
+      setContactsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
+    await fetch("/api/contacts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email || "",
+        phone: data.phone || "",
+      }),
+    });
+    await fetchContacts();
+  };
+
   React.useEffect(() => {
     if (selectedContact) {
       const found = contacts.find((c) => c.id === selectedContact);
@@ -84,20 +106,37 @@ export default function ClientInfoForm() {
     }
   }, [selectedContact, setValue, contacts]);
 
-  const onSubmit = (data: ClientInfoFormValues) => {
-    setClientInfo({
-      contactName: data.contactName,
-      email: data.email,
-      phone: data.phone,
-    });
-    setVehicleInfo({
-      make: data.make,
-      model: data.model,
-      plate: data.plate,
-      type: data.type,
-    });
-    goToNextStep();
-    router.push("/appointment/step-2");
+  const onSubmit = async (data: ClientInfoFormValues) => {
+    setSubmitLoading(true);
+    setSubmitError(null);
+    try {
+      setClientInfo({
+        contactName: data.contactName,
+        email: data.email,
+        phone: data.phone,
+      });
+      setVehicleInfo({
+        make: data.make,
+        model: data.model,
+        plate: data.plate,
+        type: data.type,
+      });
+      await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      goToNextStep();
+      router.push("/appointment/step-2");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setSubmitError(err.message);
+      } else {
+        setSubmitError("Failed to submit");
+      }
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   return (
@@ -107,35 +146,18 @@ export default function ClientInfoForm() {
         <label className="block text-sm font-medium mb-1 text-gray-300">
           Contact <span className="text-red-500">*</span>
         </label>
-        <Controller
-          name="contactName"
-          control={control}
-          rules={{ required: "Please select a contact" }}
-          render={({ field }) => {
-            const selected = contacts.find((c) => c.id === field.value);
-            if (selected) {
+        {contactsLoading ? (
+          <div className="text-gray-400 text-sm">Loading contacts...</div>
+        ) : contactsError ? (
+          <div className="text-red-500 text-sm">{contactsError}</div>
+        ) : (
+          <Controller
+            name="contactName"
+            control={control}
+            rules={{ required: "Please select a contact" }}
+            render={({ field }) => {
+              const selected = contacts.find((c) => c.id === field.value);
               return (
-                <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded px-3 py-2">
-                  <span className="text-gray-100 font-medium">Client</span>
-                  <span className="text-gray-200">{selected.name} | {selected.email} | {selected.phone}</span>
-                  <button
-                    type="button"
-                    className="ml-2 text-gray-400 hover:text-red-500 font-bold text-lg"
-                    onClick={() => {
-                      field.onChange("");
-                      setValue("email", "");
-                      setValue("phone", "");
-                      setManual(false);
-                    }}
-                    aria-label="Remove contact"
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            }
-            return (
-              <>
                 <ContactSelect
                   value={selected as Contact | undefined}
                   onSelect={(contact) => {
@@ -144,14 +166,14 @@ export default function ClientInfoForm() {
                     setValue("phone", contact.phone || "");
                     setManual(false);
                   }}
+                  contacts={contacts}
+                  loading={contactsLoading}
+                  onAddContact={handleAddContact}
                 />
-                {errors.contactName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.contactName.message}</p>
-                )}
-              </>
-            );
-          }}
-        />
+              );
+            }}
+          />
+        )}
       </div>
       {/* Email & Phone (manual only) */}
       {manual && (
@@ -442,9 +464,11 @@ export default function ClientInfoForm() {
       <button
         type="submit"
         className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow transition-colors border border-blue-700"
+        disabled={submitLoading}
       >
-        Continue
+        {submitLoading ? "Submitting..." : "Continue"}
       </button>
+      {submitError && <div className="text-red-500 text-sm mt-2">{submitError}</div>}
     </form>
   );
 }
