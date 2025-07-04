@@ -52,7 +52,7 @@ export default function Sidebar() {
                 href={item.href}
                 className={
                   "block p-2 rounded-lg " +
-                  (isActive ? "text-blue-600" : "hover:bg-gray-800 text-gray-300")
+                  (isActive ? "text-blue-500" : "hover:bg-gray-800 text-gray-300")
                 }
               >
                 <Image
@@ -73,7 +73,7 @@ export default function Sidebar() {
   return (
     <aside className="flex flex-col justify-between h-full w-[200px] fixed left-0 top-0 bottom-0 z-20 transition-all">
       {/* Logo at the top */}
-      <div className="flex items-center min-h-[60px] px-4 border-1">
+      <div className="flex items-center min-h-[60px] px-4 border-1 border-gray-800">
         <Image
           src="/Logo.svg"
           alt="Logo"
@@ -81,18 +81,18 @@ export default function Sidebar() {
           height={40}
         />
       </div>
-      <nav className="flex-1 border-r-1">
+      <nav className="flex-1 border-r-1 border-gray-800">
         <ul className="mt-3">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <li key={item.name}>
-                <a
+                <Link
                   href={item.href}
                   className={
                     "flex items-center px-4 py-[10px] font-medium text-sm " +
                     (isActive
-                      ? "text-blue-600"
+                      ? "text-blue-500 border-r-4 border-blue-500"
                       : "text-gray-300 hover:bg-gray-800 hover:text-white")
                   }
                 >
@@ -107,18 +107,19 @@ export default function Sidebar() {
                     }
                   />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               </li>
             );
           })}
         </ul>
       </nav>
       {/* Hide Sidebar Button */}
-      <div className="relative border-r-1">
-        <button
+      <div className="relative border-r-1 border-gray-800">
+        <div className="relative border-b-1 border-gray-800">
+          <button
           onClick={() => setHidden(true)}
-          className="absolute right-[10%] bg-gray-800 border border-gray-700 rounded-full p-1 shadow hover:bg-gray-700 transition-colors z-30"
-          style={{ top: "unset", bottom: "50px" }}
+          className="absolute right-[16px] w-[24px] h-[24px] bg-gray-800 border-[1.5px] border-gray-700 rounded-full p-1 shadow hover:bg-gray-700 transition-colors z-30"
+          style={{ top: "unset", bottom: "-12px" }}
           aria-label="Hide sidebar"
         >
           <Image
@@ -128,15 +129,16 @@ export default function Sidebar() {
             height={20}
           />
         </button>
-        <div className="flex items-center gap-3 p-3 mt-8 border-t border-gray-800">
+        </div>
+        <div className="flex items-center m-4 my-[18px] bg-gray-800 border-t rounded-full w-[115px] text-md border-gray-800">
           <Image
             src="/Avatar.png"
             alt="User avatar"
             width={28}
             height={28}
-            className="w-10 h-10 rounded-full object-cover bg-gray-700"
+            className="w-7 h-7 rounded-full object-cover bg-gray-700"
           />
-          <span className="text-white font-semibold">Micheal A.</span>
+          <span className="text-white text-sm pl-2 font-semibold">Micheal A.</span>
         </div>
       </div>
     </aside>

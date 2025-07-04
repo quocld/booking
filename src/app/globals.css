@@ -62,10 +62,6 @@
   --color-secondary: var(--color-neutral-800);
   --color-secondary-foreground: var(--color-neutral-50);
 }
-/* Base styles */
-* {
-  border-color: var(--grey-600);
-}
 
 body {
   background-color: var(--color-background);
