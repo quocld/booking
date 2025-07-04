@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SidebarLayout from "./SidebarLayout";
-import MirageProvider from "../MirageProvider";
+import MirageProvider from "../mirage/MirageProvider";
+import { Figtree } from "next/font/google";
+
+const figtree = Figtree({
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-gray-950 text-white min-h-screen">
+    <html lang="en" className={`dark ${figtree.className}`}>
+      <body className="bg-background text-foreground min-h-screen">
         <MirageProvider />
         <SidebarLayout>{children}</SidebarLayout>
       </body>
