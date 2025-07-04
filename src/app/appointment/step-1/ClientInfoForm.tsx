@@ -52,19 +52,25 @@ export default function ClientInfoForm() {
   const clientInfo = useBookingStore((s) => s.clientInfo);
   const vehicleInfo = useBookingStore((s) => s.vehicleInfo);
 
-  const { control, handleSubmit, setValue, watch, formState: { errors }, reset } =
-    useForm<ClientInfoFormValues>({
-      defaultValues: {
-        contactName: clientInfo.contactName,
-        email: clientInfo.email,
-        phone: clientInfo.phone,
-        make: vehicleInfo.make,
-        model: vehicleInfo.model,
-        plate: vehicleInfo.plate,
-        type: vehicleInfo.type,
-        year: vehicleInfo.year || "",
-      },
-    });
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm<ClientInfoFormValues>({
+    defaultValues: {
+      contactName: clientInfo.contactName,
+      email: clientInfo.email,
+      phone: clientInfo.phone,
+      make: vehicleInfo.make,
+      model: vehicleInfo.model,
+      plate: vehicleInfo.plate,
+      type: vehicleInfo.type,
+      year: vehicleInfo.year || "",
+    },
+  });
 
   const selectedContact = watch("contactName");
 
@@ -76,7 +82,9 @@ export default function ClientInfoForm() {
       if (!res.ok) throw new Error("Failed to fetch contacts");
       setContacts(await res.json());
     } catch (err) {
-      setContactsError(err instanceof Error ? err.message : "Failed to fetch contacts");
+      setContactsError(
+        err instanceof Error ? err.message : "Failed to fetch contacts"
+      );
     } finally {
       setContactsLoading(false);
     }
@@ -86,7 +94,11 @@ export default function ClientInfoForm() {
     fetchContacts();
   }, []);
 
-  const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
+  const handleAddContact = async (data: {
+    name: string;
+    email?: string;
+    phone?: string;
+  }) => {
     const res = await fetch("/api/contacts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -160,7 +172,7 @@ export default function ClientInfoForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Contact Selection with Add Button */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-300">
+        <label className="block mb-1 font-bold text-md text-gray-100">
           Contact <span className="text-red-500">*</span>
         </label>
         {contactsLoading ? (
@@ -176,10 +188,14 @@ export default function ClientInfoForm() {
               const selected = contacts.find((c) => c.id === field.value);
               if (selected) {
                 // Compose info string, skip empty fields
-                const info = [selected.name, selected.email, selected.phone].filter(Boolean).join(" | ");
+                const info = [selected.name, selected.email, selected.phone]
+                  .filter(Boolean)
+                  .join(" | ");
                 return (
-                  <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded px-3 py-2">
-                    <span className="text-gray-100 text-sm font-medium">Client {info}</span>
+                  <div className="flex items-center gap-2 rounded-lg px-3 py-2">
+                    <span className="text-gray-300 text-sm font-medium">
+                      Client {info}
+                    </span>
                     <button
                       type="button"
                       className="ml-2 text-gray-400 hover:text-red-500 text-lg font-bold focus:outline-none"
@@ -237,11 +253,13 @@ export default function ClientInfoForm() {
                   <input
                     type="email"
                     {...field}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Email"
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.email.message}
+                    </p>
                   )}
                 </>
               )}
@@ -264,11 +282,13 @@ export default function ClientInfoForm() {
                   <input
                     type="tel"
                     {...field}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Phone"
                   />
                   {errors.phone && (
-                    <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.phone.message}
+                    </p>
                   )}
                 </>
               )}
@@ -277,11 +297,13 @@ export default function ClientInfoForm() {
         </div>
       )}
       {/* Vehicle Info */}
-      <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 mt-4">
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">Vehicle Detail</h3>
+      <label className="block mb-1 font-bold text-md text-gray-100">
+        Vehicle Detail <span className="text-red-500">*</span>
+      </label>
+      <div className="bg-[#18181B] rounded-lg p-4 border-1 border-gray-600">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">
+            <label className="block text-sm font-bold mb-1 text-gray-100">
               Year <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -295,16 +317,20 @@ export default function ClientInfoForm() {
                       <input
                         type="text"
                         {...field}
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter year"
                       />
                       {errors.year && (
-                        <p className="text-red-500 text-xs mt-1">{errors.year.message}</p>
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.year.message}
+                        </p>
                       )}
                     </>
                   );
                 }
-                const filteredYears = years.filter((y) => y.includes(yearSearch));
+                const filteredYears = years.filter((y) =>
+                  y.includes(yearSearch)
+                );
                 return (
                   <div className="relative">
                     <input
@@ -312,19 +338,19 @@ export default function ClientInfoForm() {
                       value={field.value || ""}
                       onFocus={() => setYearDropdownOpen(true)}
                       onClick={() => setYearDropdownOpen(true)}
-                      placeholder="Select year"
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      placeholder="Select"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                       readOnly
                     />
                     {yearDropdownOpen && (
-                      <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
+                      <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
                         <div className="p-2">
                           <input
                             type="text"
                             value={yearSearch}
                             onChange={(e) => setYearSearch(e.target.value)}
                             placeholder="Search year..."
-                            className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
                             autoFocus
                           />
                         </div>
@@ -350,7 +376,9 @@ export default function ClientInfoForm() {
                       </div>
                     )}
                     {errors.year && (
-                      <p className="text-red-500 text-xs mt-1">{errors.year.message}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.year.message}
+                      </p>
                     )}
                   </div>
                 );
@@ -358,34 +386,40 @@ export default function ClientInfoForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">
+            <label className="block text-sm font-bold mb-1 text-gray-100">
               Make <span className="text-red-500">*</span>
             </label>
             <Controller
               name="make"
               control={control}
               rules={{ required: "Please select a make" }}
-              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "make"> }) => (
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "make">;
+              }) =>
                 manualVehicle ? (
                   <>
                     <input
                       type="text"
                       {...field}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter make"
                     />
                     {errors.make && (
-                      <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.make.message}
+                      </p>
                     )}
                   </>
                 ) : (
                   <>
                     <select
                       {...field}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="" disabled>
-                        Select make
+                        Select
                       </option>
                       {makes.map((make) => (
                         <option key={make} value={make}>
@@ -394,44 +428,52 @@ export default function ClientInfoForm() {
                       ))}
                     </select>
                     {errors.make && (
-                      <p className="text-red-500 text-xs mt-1">{errors.make.message}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.make.message}
+                      </p>
                     )}
                   </>
                 )
-              )}
+              }
             />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">
+            <label className="block text-sm font-bold mb-1 text-gray-100">
               Model <span className="text-red-500">*</span>
             </label>
             <Controller
               name="model"
               control={control}
               rules={{ required: "Please select a model" }}
-              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "model"> }) => (
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "model">;
+              }) =>
                 manualVehicle ? (
                   <>
                     <input
                       type="text"
                       {...field}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter model"
                     />
                     {errors.model && (
-                      <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.model.message}
+                      </p>
                     )}
                   </>
                 ) : (
                   <>
                     <select
                       {...field}
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="" disabled>
-                        Select model
+                        Select
                       </option>
                       {models.map((model) => (
                         <option key={model} value={model}>
@@ -440,29 +482,35 @@ export default function ClientInfoForm() {
                       ))}
                     </select>
                     {errors.model && (
-                      <p className="text-red-500 text-xs mt-1">{errors.model.message}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.model.message}
+                      </p>
                     )}
                   </>
                 )
-              )}
+              }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">
+            <label className="block text-sm font-bold mb-1 text-gray-100">
               Vehicle Type <span className="text-red-500">*</span>
             </label>
             <Controller
               name="type"
               control={control}
               rules={{ required: "Please select a type" }}
-              render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "type"> }) => (
+              render={({
+                field,
+              }: {
+                field: ControllerRenderProps<ClientInfoFormValues, "type">;
+              }) => (
                 <>
                   <select
                     {...field}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="" disabled>
-                      Select type
+                      Select
                     </option>
                     {types.map((type) => (
                       <option key={type} value={type}>
@@ -471,50 +519,54 @@ export default function ClientInfoForm() {
                     ))}
                   </select>
                   {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.type.message}
+                    </p>
                   )}
                 </>
               )}
             />
           </div>
         </div>
-        {/* Manual vehicle entry link */}
-        {!manualVehicle && (
-          <div className="mt-2">
-            <button
-              type="button"
-              className="text-blue-400 underline text-sm hover:text-blue-600"
-              onClick={() => setManualVehicle(true)}
-            >
-              Can&apos;t find a vehicle? Enter it manually.
-            </button>
-          </div>
-        )}
-        {/* Link to switch back to dropdown mode */}
-        {manualVehicle && (
-          <div className="mt-4">
-            <button
-              type="button"
-              className="text-blue-400 underline text-sm hover:text-blue-600"
-              onClick={() => setManualVehicle(false)}
-            >
-              I prefer to pick from the available Vehicle options.
-            </button>
-          </div>
-        )}
       </div>
+       {/* Manual vehicle entry link */}
+       {!manualVehicle && (
+        <div className="mt-2">
+          <button
+            type="button"
+            className="text-blue-400 text-sm hover:text-blue-600"
+            onClick={() => setManualVehicle(true)}
+          >
+            Can&apos;t find a vehicle? Enter it manually.
+          </button>
+        </div>
+      )}
+      {/* Link to switch back to dropdown mode */}
+      {manualVehicle && (
+        <div className="mt-4">
+          <button
+            type="button"
+            className="text-blue-400 text-sm hover:text-blue-600"
+            onClick={() => setManualVehicle(false)}
+          >
+            I prefer to pick from the available Vehicle options.
+          </button>
+        </div>
+      )}
       {/* Nút Next nhỏ, góc phải */}
       <div className="flex justify-end mt-6">
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded shadow transition-colors border border-blue-700 text-sm"
-          style={{ minWidth: "80px" }}
+          className="bg-blue-500 hover:bg-blue-600 h-12 w-[62px] text-white font-bold rounded-lg text-sm"
+          style={{ minWidth: "62px" }}
           disabled={submitLoading}
         >
           {submitLoading ? "..." : "Next"}
         </button>
       </div>
-      {submitError && <div className="text-red-500 text-sm mt-2">{submitError}</div>}
+      {submitError && (
+        <div className="text-red-500 text-sm mt-2">{submitError}</div>
+      )}
     </form>
   );
 }

@@ -63,11 +63,11 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="flex-1 flex items-center justify-between bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors hover:bg-gray-700"
+          className="flex-1 h-12 flex items-center justify-between bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors hover:bg-gray-700"
           aria-label="Select contact"
           onClick={() => setModalOpen(true)}
         >
-          <span>{selectedContact ? selectedContact.name : "Select contact"}</span>
+          <span>{selectedContact ? selectedContact.name : "Select"}</span>
           <svg className="w-4 h-4 ml-2 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
@@ -77,9 +77,9 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts
           aria-label="Add Contact"
           title="Add Contact"
           onClick={() => setAddModalOpen(true)}
-          className="flex items-center justify-center rounded-full bg-gray-700 hover:bg-blue-600 focus:bg-blue-700 border border-gray-600 text-white w-10 h-10 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center justify-center rounded-lg h-12 w-12 hover:bg-blue-600 focus:bg-blue-700 border-[1.5px] border-blue-400 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-blue-400" fill="rte" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
         </button>
