@@ -15,6 +15,7 @@ interface VehicleFieldProps {
   isOpen: boolean;
   onToggle: (open: boolean) => void;
   label: string;
+  validationTrigger: number;
 }
 
 const VehicleField: React.FC<VehicleFieldProps> = ({
@@ -59,7 +60,15 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
     <Controller
       name={name}
       control={control}
-      rules={{ required: `Please select a ${name}` }}
+      rules={{ 
+        required: `Please select a ${name}`,
+        validate: (value) => {
+          if (!value || value.trim() === '') {
+            return `Please select a ${name}`;
+          }
+          return true;
+        }
+      }}
       render={({ field }: { field: ControllerRenderProps<any, typeof name> }) => {
         if (manualVehicle) {
           return (
@@ -98,4 +107,22 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
   );
 };
 
-export default React.memo(VehicleField); 
+export default React.memo(VehicleField, (prevProps, nextProps) => {
+  // Always re-render if errors change
+  if (JSON.stringify(prevProps.errors) !== JSON.stringify(nextProps.errors)) {
+    return false;
+  }
+  // Re-render if validationTrigger changes
+  if (prevProps.validationTrigger !== nextProps.validationTrigger) {
+    return false;
+  }
+  // Re-render if manualVehicle changes
+  if (prevProps.manualVehicle !== nextProps.manualVehicle) {
+    return false;
+  }
+  // Re-render if search or isOpen changes
+  if (prevProps.search !== nextProps.search || prevProps.isOpen !== nextProps.isOpen) {
+    return false;
+  }
+  return true;
+}); 

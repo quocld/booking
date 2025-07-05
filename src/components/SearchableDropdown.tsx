@@ -114,4 +114,18 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   );
 };
 
-export default React.memo(SearchableDropdown); 
+export default React.memo(SearchableDropdown, (prevProps, nextProps) => {
+  // Always re-render if error changes
+  if (prevProps.error !== nextProps.error) {
+    return false;
+  }
+  // Re-render if value changes
+  if (prevProps.value !== nextProps.value) {
+    return false;
+  }
+  // Re-render if search or isOpen changes
+  if (prevProps.search !== nextProps.search || prevProps.isOpen !== nextProps.isOpen) {
+    return false;
+  }
+  return true;
+}); 

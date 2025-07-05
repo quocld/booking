@@ -27,6 +27,7 @@ interface ContactFieldProps {
   setValue: UseFormSetValue<ClientInfoFormValues>;
   setManual: (manual: boolean) => void;
   setNewContactId: (id: string | null) => void;
+  validationTrigger: number;
 }
 
 const ContactField: React.FC<ContactFieldProps> = ({
@@ -74,41 +75,73 @@ const ContactField: React.FC<ContactFieldProps> = ({
         
         if (selected) {
           return (
-            <div className="flex items-center gap-2 rounded-lg px-3 py-2">
-              <span className="text-gray-300 text-sm font-medium">
-                Client {getSelectedContactInfo(selected)}
-              </span>
-              <button
-                type="button"
-                className="ml-2 text-red-500 text-lg font-bold focus:outline-none"
-                aria-label="Remove contact"
-                onClick={() => {
-                  field.onChange("");
-                  handleContactRemove();
-                }}
-              >
-                ×
-              </button>
-            </div>
+            <>
+              <div className="flex items-center gap-2 rounded-lg px-3 py-2">
+                <span className="text-gray-300 text-sm font-medium">
+                  Client {getSelectedContactInfo(selected)}
+                </span>
+                <button
+                  type="button"
+                  className="ml-2 text-red-500 text-lg font-bold focus:outline-none"
+                  aria-label="Remove contact"
+                  onClick={() => {
+                    field.onChange("");
+                    handleContactRemove();
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              {errors.contactName && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.contactName.message}
+                </p>
+              )}
+            </>
           );
         }
 
         return (
-          <ContactSelect
-            value={selected as Contact | undefined}
-            onSelect={(contact) => {
-              field.onChange(contact.id);
-              handleContactSelect(contact);
-            }}
-            contacts={contacts}
-            loading={contactsLoading}
-            onAddContact={onAddContact}
-            newContactId={newContactId}
-          />
+          <>
+            <ContactSelect
+              value={selected || null}
+              onSelect={(contact) => {
+                field.onChange(contact.id);
+                handleContactSelect(contact);
+              }}
+              contacts={contacts}
+              loading={contactsLoading}
+              onAddContact={onAddContact}
+              newContactId={newContactId}
+            />
+            {errors.contactName && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.contactName.message}
+              </p>
+            )}
+          </>
         );
       }}
     />
   );
 };
 
-export default React.memo(ContactField); 
+export default React.memo(ContactField, (prevProps, nextProps) => {
+  // Always re-render if errors change
+  if (JSON.stringify(prevProps.errors) !== JSON.stringify(nextProps.errors)) {
+    return false;
+  }
+  // Re-render if validationTrigger changes
+  if (prevProps.validationTrigger !== nextProps.validationTrigger) {
+    return false;
+  }
+  // Re-render if contacts change
+  if (prevProps.contacts !== nextProps.contacts) {
+    return false;
+  }
+  // Re-render if loading state changes
+  if (prevProps.contactsLoading !== nextProps.contactsLoading) {
+    return false;
+  }
+  return true;
+}); 

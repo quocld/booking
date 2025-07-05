@@ -6,6 +6,7 @@ import { Controller, ControllerRenderProps } from "react-hook-form";
 interface ManualContactFieldsProps {
   control: any;
   errors: any;
+  validationTrigger: number;
 }
 
 const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
@@ -76,4 +77,14 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
   );
 };
 
-export default React.memo(ManualContactFields); 
+export default React.memo(ManualContactFields, (prevProps, nextProps) => {
+  // Always re-render if errors change
+  if (JSON.stringify(prevProps.errors) !== JSON.stringify(nextProps.errors)) {
+    return false;
+  }
+  // Re-render if validationTrigger changes
+  if (prevProps.validationTrigger !== nextProps.validationTrigger) {
+    return false;
+  }
+  return true;
+}); 

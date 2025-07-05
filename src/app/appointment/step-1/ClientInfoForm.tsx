@@ -39,6 +39,7 @@ export default function ClientInfoForm() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [newContactId, setNewContactId] = useState<string | null>(null);
+  const [validationTrigger, setValidationTrigger] = useState(0);
 
   // Dropdown states
   const [yearSearch, setYearSearch] = useState("");
@@ -143,6 +144,11 @@ export default function ClientInfoForm() {
     }
   }, [setClientInfo, setVehicleInfo, goToNextStep, router]);
 
+  // Memoize onError
+  const onError = useCallback((errors: any) => {
+    setValidationTrigger(prev => prev + 1);
+  }, []);
+
   // Memoize manual vehicle toggle handlers
   const handleManualVehicleToggle = useCallback(() => {
     setManualVehicle(prev => !prev);
@@ -169,7 +175,7 @@ export default function ClientInfoForm() {
   }, [defaultValues, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
       {/* Contact Selection */}
       <div>
         <label className="block mb-1 font-bold text-md text-gray-100">
@@ -191,13 +197,41 @@ export default function ClientInfoForm() {
             setValue={setValue}
             setManual={setManual}
             setNewContactId={setNewContactId}
+            validationTrigger={validationTrigger}
           />
         )}
       </div>
 
       {/* Manual Contact Fields */}
       {manual && (
-        <ManualContactFields control={control} errors={errors} />
+        <>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Contact Name <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="contactName"
+              control={control}
+              rules={{ required: "Please enter contact name" }}
+              render={({ field }) => (
+                <>
+                  <input
+                    type="text"
+                    {...field}
+                    className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Contact name"
+                  />
+                  {errors.contactName && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.contactName.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+          <ManualContactFields control={control} errors={errors} validationTrigger={validationTrigger} />
+        </>
       )}
 
       {/* Vehicle Info */}
@@ -216,6 +250,7 @@ export default function ClientInfoForm() {
             isOpen={yearDropdownOpen}
             onToggle={setYearDropdownOpen}
             label="Year"
+            validationTrigger={validationTrigger}
           />
           <VehicleField
             name="make"
@@ -227,6 +262,7 @@ export default function ClientInfoForm() {
             isOpen={makeDropdownOpen}
             onToggle={setMakeDropdownOpen}
             label="Make"
+            validationTrigger={validationTrigger}
           />
         </div>
         <div className="grid grid-cols-1 gap-4 w-full mt-4">
@@ -240,6 +276,7 @@ export default function ClientInfoForm() {
             isOpen={modelDropdownOpen}
             onToggle={setModelDropdownOpen}
             label="Model"
+            validationTrigger={validationTrigger}
           />
           <VehicleField
             name="type"
@@ -251,6 +288,7 @@ export default function ClientInfoForm() {
             isOpen={typeDropdownOpen}
             onToggle={setTypeDropdownOpen}
             label="Vehicle Type"
+            validationTrigger={validationTrigger}
           />
         </div>
       </div>
