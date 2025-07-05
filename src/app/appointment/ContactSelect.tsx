@@ -27,12 +27,13 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts
   };
 
   // Handler for adding a new contact
-  const handleAddContact = async (data: { name: string; email?: string; phone?: string }) => {
+  const handleAddContact = async (data: { name: string; email?: string; phone?: string }): Promise<Contact | undefined> => {
     const newContact = await onAddContact(data);
     setAddModalOpen(false);
     if (newContact && typeof newContact === 'object' && 'id' in newContact) {
       setPendingSelectId(newContact.id as string);
     }
+    return newContact;
   };
 
   // Khi contacts thay đổi, nếu có pendingSelectId thì set selectedContact
@@ -92,6 +93,7 @@ const ContactSelect: React.FC<ContactSelectProps> = ({ value, onSelect, contacts
           onSelect={handleModalSelect}
           contacts={contacts}
           loading={loading}
+          onAddContact={handleAddContact}
         />
       )}
       {/* Add Contact Modal */}

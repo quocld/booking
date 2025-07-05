@@ -41,6 +41,16 @@ export default function ClientInfoForm() {
   // State for manual vehicle entry
   const [manualVehicle, setManualVehicle] = useState(false);
 
+  // State for custom dropdowns (Model, Type)
+  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const [modelSearch, setModelSearch] = useState("");
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
+  const [typeSearch, setTypeSearch] = useState("");
+
+  // State for custom dropdown Make
+  const [makeDropdownOpen, setMakeDropdownOpen] = useState(false);
+  const [makeSearch, setMakeSearch] = useState("");
+
   // Make contacts stateful so we can add new ones
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
@@ -198,7 +208,7 @@ export default function ClientInfoForm() {
                     </span>
                     <button
                       type="button"
-                      className="ml-2 text-gray-400 hover:text-red-500 text-lg font-bold focus:outline-none"
+                      className="ml-2 text-red-500 text-lg font-bold focus:outline-none"
                       aria-label="Remove contact"
                       onClick={() => {
                         field.onChange("");
@@ -339,40 +349,46 @@ export default function ClientInfoForm() {
                       onFocus={() => setYearDropdownOpen(true)}
                       onClick={() => setYearDropdownOpen(true)}
                       placeholder="Select"
-                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
                       readOnly
                     />
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${yearDropdownOpen ? 'rotate-180' : ''}`}>
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
                     {yearDropdownOpen && (
-                      <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
-                        <div className="p-2">
-                          <input
-                            type="text"
-                            value={yearSearch}
-                            onChange={(e) => setYearSearch(e.target.value)}
-                            placeholder="Search year..."
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                            autoFocus
-                          />
-                        </div>
-                        {filteredYears.length > 0 ? (
-                          filteredYears.map((y) => (
-                            <div
-                              key={y}
-                              className="px-3 py-2 cursor-pointer hover:bg-blue-600 hover:text-white"
-                              onMouseDown={() => {
-                                field.onChange(y);
-                                setYearSearch("");
-                                setYearDropdownOpen(false);
-                              }}
-                            >
-                              {y}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="px-3 py-2 text-gray-400">
-                            No years found
+                      <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 rounded-xl max-h-72 overflow-auto animate-fade-in">
+                        <div className="p-3 pb-0">
+                          <div className="relative flex items-center">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input
+                              type="text"
+                              value={yearSearch}
+                              onChange={(e) => setYearSearch(e.target.value)}
+                              placeholder="Search"
+                              className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                              autoFocus
+                            />
                           </div>
-                        )}
+                        </div>
+                        <div className="pt-2">
+                          {filteredYears.length > 0 ? (
+                            filteredYears.map((y) => (
+                              <div
+                                key={y}
+                                className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
+                                onMouseDown={() => {
+                                  field.onChange(y);
+                                  setYearSearch("");
+                                  setYearDropdownOpen(false);
+                                }}
+                              >
+                                {y}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-5 py-3 text-gray-400 text-base">No years found</div>
+                          )}
+                        </div>
                       </div>
                     )}
                     {errors.year && (
@@ -393,52 +409,87 @@ export default function ClientInfoForm() {
               name="make"
               control={control}
               rules={{ required: "Please select a make" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "make">;
-              }) =>
-                manualVehicle ? (
-                  <>
+              render={({ field }) => {
+                if (manualVehicle) {
+                  return (
+                    <>
+                      <input
+                        type="text"
+                        {...field}
+                        className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter make"
+                      />
+                      {errors.make && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.make.message}
+                        </p>
+                      )}
+                    </>
+                  );
+                }
+                const filteredMakes = makes.filter((m) => m.toLowerCase().includes(makeSearch.toLowerCase()));
+                return (
+                  <div className="relative">
                     <input
                       type="text"
-                      {...field}
-                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter make"
+                      value={field.value || ""}
+                      onFocus={() => setMakeDropdownOpen(true)}
+                      onClick={() => setMakeDropdownOpen(true)}
+                      placeholder="Select"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
+                      readOnly
                     />
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${makeDropdownOpen ? 'rotate-180' : ''}`}>
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                    {makeDropdownOpen && (
+                      <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 rounded-xl max-h-72 overflow-auto animate-fade-in">
+                        <div className="p-3 pb-0">
+                          <div className="relative flex items-center">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input
+                              type="text"
+                              value={makeSearch}
+                              onChange={(e) => setMakeSearch(e.target.value)}
+                              placeholder="Search"
+                              className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                              autoFocus
+                            />
+                          </div>
+                        </div>
+                        <div className="pt-2">
+                          {filteredMakes.length > 0 ? (
+                            filteredMakes.map((m) => (
+                              <div
+                                key={m}
+                                className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
+                                onMouseDown={() => {
+                                  field.onChange(m);
+                                  setMakeSearch("");
+                                  setMakeDropdownOpen(false);
+                                }}
+                              >
+                                {m}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-5 py-3 text-gray-400 text-base">No makes found</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     {errors.make && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.make.message}
                       </p>
                     )}
-                  </>
-                ) : (
-                  <>
-                    <select
-                      {...field}
-                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="" disabled>
-                        Select
-                      </option>
-                      {makes.map((make) => (
-                        <option key={make} value={make}>
-                          {make}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.make && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.make.message}
-                      </p>
-                    )}
-                  </>
-                )
-              }
+                  </div>
+                );
+              }}
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4">
+        <div className="grid grid-cols-1 gap-4 w-full mt-4">
           <div>
             <label className="block text-sm font-bold mb-1 text-gray-100">
               Model <span className="text-red-500">*</span>
@@ -447,48 +498,83 @@ export default function ClientInfoForm() {
               name="model"
               control={control}
               rules={{ required: "Please select a model" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "model">;
-              }) =>
-                manualVehicle ? (
-                  <>
+              render={({ field }) => {
+                if (manualVehicle) {
+                  return (
+                    <>
+                      <input
+                        type="text"
+                        {...field}
+                        className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter model"
+                      />
+                      {errors.model && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.model.message}
+                        </p>
+                      )}
+                    </>
+                  );
+                }
+                const filteredModels = models.filter((m) => m.toLowerCase().includes(modelSearch.toLowerCase()));
+                return (
+                  <div className="relative">
                     <input
                       type="text"
-                      {...field}
-                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter model"
+                      value={field.value || ""}
+                      onFocus={() => setModelDropdownOpen(true)}
+                      onClick={() => setModelDropdownOpen(true)}
+                      placeholder="Select"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
+                      readOnly
                     />
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`}>
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                    {modelDropdownOpen && (
+                      <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 rounded-xl max-h-72 overflow-auto animate-fade-in">
+                        <div className="p-3 pb-0">
+                          <div className="relative flex items-center">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input
+                              type="text"
+                              value={modelSearch}
+                              onChange={(e) => setModelSearch(e.target.value)}
+                              placeholder="Search"
+                              className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                              autoFocus
+                            />
+                          </div>
+                        </div>
+                        <div className="pt-2">
+                          {filteredModels.length > 0 ? (
+                            filteredModels.map((m) => (
+                              <div
+                                key={m}
+                                className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
+                                onMouseDown={() => {
+                                  field.onChange(m);
+                                  setModelSearch("");
+                                  setModelDropdownOpen(false);
+                                }}
+                              >
+                                {m}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-5 py-3 text-gray-400 text-base">No models found</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     {errors.model && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.model.message}
                       </p>
                     )}
-                  </>
-                ) : (
-                  <>
-                    <select
-                      {...field}
-                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="" disabled>
-                        Select
-                      </option>
-                      {models.map((model) => (
-                        <option key={model} value={model}>
-                          {model}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.model && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.model.message}
-                      </p>
-                    )}
-                  </>
-                )
-              }
+                  </div>
+                );
+              }}
             />
           </div>
           <div>
@@ -499,32 +585,66 @@ export default function ClientInfoForm() {
               name="type"
               control={control}
               rules={{ required: "Please select a type" }}
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<ClientInfoFormValues, "type">;
-              }) => (
-                <>
-                  <select
-                    {...field}
-                    className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    {types.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.type.message}
-                    </p>
-                  )}
-                </>
-              )}
+              render={({ field }) => {
+                const filteredTypes = types.filter((t) => t.toLowerCase().includes(typeSearch.toLowerCase()));
+                return (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={field.value || ""}
+                      onFocus={() => setTypeDropdownOpen(true)}
+                      onClick={() => setTypeDropdownOpen(true)}
+                      placeholder="Select"
+                      className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
+                      readOnly
+                    />
+                    <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${typeDropdownOpen ? 'rotate-180' : ''}`}>
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                    {typeDropdownOpen && (
+                      <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 rounded-xl max-h-72 overflow-auto animate-fade-in">
+                        <div className="p-3 pb-0">
+                          <div className="relative flex items-center">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input
+                              type="text"
+                              value={typeSearch}
+                              onChange={(e) => setTypeSearch(e.target.value)}
+                              placeholder="Search"
+                              className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                              autoFocus
+                            />
+                          </div>
+                        </div>
+                        <div className="pt-2">
+                          {filteredTypes.length > 0 ? (
+                            filteredTypes.map((t) => (
+                              <div
+                                key={t}
+                                className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
+                                onMouseDown={() => {
+                                  field.onChange(t);
+                                  setTypeSearch("");
+                                  setTypeDropdownOpen(false);
+                                }}
+                              >
+                                {t}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-5 py-3 text-gray-400 text-base">No types found</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {errors.type && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.type.message}
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
             />
           </div>
         </div>
