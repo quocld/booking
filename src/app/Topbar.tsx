@@ -1,13 +1,13 @@
 "use client";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Topbar() {
-  // const router = useRouter();
+  const router = useRouter();
   return (
     <header className="sticky h-[60px] bg-[#0F0F0F] top-0 z-10 flex items-center justify-center gap-3 border-b border-gray-800 px-5 py-4 w-full">
       <button
-        // onClick={() => router.back()}
+        onClick={() => router.back()}
         className="p-2 rounded bg-gray-800 transition-colors"
         aria-label="Back"
       >

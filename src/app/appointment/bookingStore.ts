@@ -19,11 +19,13 @@ interface BookingState {
   clientInfo: ClientInfo;
   vehicleInfo: VehicleInfo;
   step: number;
+  _hasHydrated: boolean;
   setClientInfo: (info: ClientInfo) => void;
   setVehicleInfo: (info: VehicleInfo) => void;
   goToNextStep: () => void;
   resetBooking: () => void;
   setStep: (step: number) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 const initialClientInfo: ClientInfo = {
@@ -46,6 +48,7 @@ export const useBookingStore = create<BookingState>()(
       clientInfo: initialClientInfo,
       vehicleInfo: initialVehicleInfo,
       step: 1,
+      _hasHydrated: false,
       setClientInfo: (info) => set({ clientInfo: info }),
       setVehicleInfo: (info) => set({ vehicleInfo: info }),
       goToNextStep: () => set((state) => ({ step: Math.min(state.step + 1, 3) })),
@@ -55,6 +58,7 @@ export const useBookingStore = create<BookingState>()(
         step: 1,
       }),
       setStep: (step) => set({ step }),
+      setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
     }),
     {
       name: 'booking-storage',
@@ -72,6 +76,11 @@ export const useBookingStore = create<BookingState>()(
           if (typeof window === 'undefined') return;
           window.sessionStorage.removeItem(name);
         },
+      },
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHasHydrated(true);
+        }
       },
     }
   )
