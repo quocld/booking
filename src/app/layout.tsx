@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`dark ${figtree.className}`}>
-      <body className="bg-background text-foreground min-h-screen">
+      <body className="bg-background text-foreground">
         <MirageProvider />
         <SidebarLayout>{children}</SidebarLayout>
       </body>

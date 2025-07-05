@@ -84,4 +84,32 @@ export const useBookingStore = create<BookingState>()(
       },
     }
   )
+);
+
+// Optimized selectors to prevent unnecessary re-renders
+export const useClientInfo = () => useBookingStore(
+  (state) => state.clientInfo,
+);
+
+export const useVehicleInfo = () => useBookingStore(
+  (state) => state.vehicleInfo,
+);
+
+export const useStep = () => useBookingStore(
+  (state) => state.step
+);
+
+export const useHasHydrated = () => useBookingStore(
+  (state) => state._hasHydrated
+);
+
+export const useBookingActions = () => useBookingStore(
+  (state) => ({
+    setClientInfo: state.setClientInfo,
+    setVehicleInfo: state.setVehicleInfo,
+    goToNextStep: state.goToNextStep,
+    resetBooking: state.resetBooking,
+    setStep: state.setStep,
+    setHasHydrated: state.setHasHydrated,
+  })
 ); 

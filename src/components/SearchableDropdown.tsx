@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 
 interface SearchableDropdownProps {
   value: string;
@@ -27,9 +27,31 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   error,
   required = true,
 }) => {
-  const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(search.toLowerCase())
-  );
+  // Memoize filtered options to prevent recalculation on every render
+  const filteredOptions = useMemo(() => {
+    return options.filter((option) =>
+      option.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [options, search]);
+
+  // Memoize event handlers
+  const handleFocus = useCallback(() => {
+    onToggle(true);
+  }, [onToggle]);
+
+  const handleClick = useCallback(() => {
+    onToggle(true);
+  }, [onToggle]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value);
+  }, [onSearchChange]);
+
+  const handleOptionSelect = useCallback((option: string) => {
+    onSelect(option);
+    onSearchChange("");
+    onToggle(false);
+  }, [onSelect, onSearchChange, onToggle]);
 
   return (
     <div>
@@ -40,8 +62,8 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
         <input
           type="text"
           value={value || ""}
-          onFocus={() => onToggle(true)}
-          onClick={() => onToggle(true)}
+          onFocus={handleFocus}
+          onClick={handleClick}
           placeholder={placeholder}
           className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
           readOnly
@@ -62,7 +84,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => onSearchChange(e.target.value)}
+                  onChange={handleSearchChange}
                   placeholder="Search"
                   className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                   autoFocus
@@ -75,11 +97,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                   <div
                     key={option}
                     className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
-                    onMouseDown={() => {
-                      onSelect(option);
-                      onSearchChange("");
-                      onToggle(false);
-                    }}
+                    onMouseDown={() => handleOptionSelect(option)}
                   >
                     {option}
                   </div>
@@ -96,4 +114,4 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   );
 };
 
-export default SearchableDropdown; 
+export default React.memo(SearchableDropdown); 

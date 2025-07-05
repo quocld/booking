@@ -37,7 +37,7 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
   if (!hasHydrated) {
     return (
       <div
-        className="px-4 py-6 gap-4 min-h-screen"
+        className="px-4 py-6 gap-4"
         style={{
           background: "linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)"
         }}
@@ -86,7 +86,7 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
 
   return (
     <div
-      className="px-4 py-6 gap-4 min-h-screen"
+      className="px-4 py-6 gap-4"
       style={{
         background: "linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)"
       }}
