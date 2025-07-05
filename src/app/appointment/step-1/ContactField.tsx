@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useMemo, useCallback } from "react";
-import { Controller, ControllerRenderProps, UseFormSetValue } from "react-hook-form";
-import ContactSelect from "../ContactSelect";
-import type { Contact } from "../ContactPickerModal";
+import React, { useCallback } from 'react';
+import { Controller, ControllerRenderProps, UseFormSetValue } from 'react-hook-form';
+import ContactSelect from '../ContactSelect';
+import type { Contact } from '../ContactPickerModal';
 
 interface ClientInfoFormValues {
   contactName: string;
@@ -21,7 +21,6 @@ interface ContactFieldProps {
   errors: any;
   contacts: Contact[];
   contactsLoading: boolean;
-  contactsError: string | null;
   onAddContact: (data: { name: string; email?: string; phone?: string }) => Promise<Contact>;
   newContactId: string | null;
   setValue: UseFormSetValue<ClientInfoFormValues>;
@@ -35,7 +34,6 @@ const ContactField: React.FC<ContactFieldProps> = ({
   errors,
   contacts,
   contactsLoading,
-  contactsError,
   onAddContact,
   newContactId,
   setValue,
@@ -44,16 +42,16 @@ const ContactField: React.FC<ContactFieldProps> = ({
 }) => {
   // Memoize the contact selection handler
   const handleContactSelect = useCallback((contact: Contact) => {
-    setValue("email", contact.email || "");
-    setValue("phone", contact.phone || "");
+    setValue('email', contact.email || '');
+    setValue('phone', contact.phone || '');
     setManual(false);
     setNewContactId(null);
   }, [setValue, setManual, setNewContactId]);
 
   // Memoize the contact removal handler
   const handleContactRemove = useCallback(() => {
-    setValue("email", "");
-    setValue("phone", "");
+    setValue('email', '');
+    setValue('phone', '');
     setManual(false);
     setNewContactId(null);
   }, [setValue, setManual, setNewContactId]);
@@ -62,17 +60,16 @@ const ContactField: React.FC<ContactFieldProps> = ({
   const getSelectedContactInfo = useCallback((selected: Contact) => {
     return [selected.name, selected.email, selected.phone]
       .filter(Boolean)
-      .join(" | ");
+      .join(' | ');
   }, []);
 
   return (
     <Controller
-      name="contactName"
       control={control}
-      rules={{ required: "Please select a contact" }}
-      render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, "contactName"> }) => {
+      name="contactName"
+      render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, 'contactName'> }) => {
         const selected = contacts.find((c) => c.id === field.value);
-        
+
         if (selected) {
           return (
             <>
@@ -81,11 +78,11 @@ const ContactField: React.FC<ContactFieldProps> = ({
                   Client {getSelectedContactInfo(selected)}
                 </span>
                 <button
-                  type="button"
-                  className="ml-2 text-red-500 text-lg font-bold focus:outline-none"
                   aria-label="Remove contact"
+                  className="ml-2 text-red-500 text-lg font-bold focus:outline-none"
+                  type="button"
                   onClick={() => {
-                    field.onChange("");
+                    field.onChange('');
                     handleContactRemove();
                   }}
                 >
@@ -104,15 +101,15 @@ const ContactField: React.FC<ContactFieldProps> = ({
         return (
           <>
             <ContactSelect
+              contacts={contacts}
+              loading={contactsLoading}
+              newContactId={newContactId}
               value={selected || null}
+              onAddContact={onAddContact}
               onSelect={(contact) => {
                 field.onChange(contact.id);
                 handleContactSelect(contact);
               }}
-              contacts={contacts}
-              loading={contactsLoading}
-              onAddContact={onAddContact}
-              newContactId={newContactId}
             />
             {errors.contactName && (
               <p className="text-red-500 text-xs mt-1">
@@ -122,6 +119,7 @@ const ContactField: React.FC<ContactFieldProps> = ({
           </>
         );
       }}
+      rules={{ required: 'Please select a contact' }}
     />
   );
 };
@@ -144,4 +142,4 @@ export default React.memo(ContactField, (prevProps, nextProps) => {
     return false;
   }
   return true;
-}); 
+});

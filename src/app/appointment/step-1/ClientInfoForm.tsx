@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useForm, Controller, ControllerRenderProps } from "react-hook-form";
-import { useBookingStore } from "../bookingStore";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import ContactField from "./ContactField";
-import VehicleField from "./VehicleField";
-import ManualContactFields from "./ManualContactFields";
-import type { Contact } from "../ContactPickerModal";
+import { useForm, Controller } from 'react-hook-form';
+import { useBookingStore } from '../bookingStore';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import ContactField from './ContactField';
+import VehicleField from './VehicleField';
+import ManualContactFields from './ManualContactFields';
+import type { Contact } from '../ContactPickerModal';
 
 interface ClientInfoFormValues {
   contactName: string;
@@ -22,7 +22,7 @@ interface ClientInfoFormValues {
 
 export default function ClientInfoForm() {
   const router = useRouter();
-  
+
   // Zustand selectors
   const setClientInfo = useBookingStore((s) => s.setClientInfo);
   const setVehicleInfo = useBookingStore((s) => s.setVehicleInfo);
@@ -42,13 +42,13 @@ export default function ClientInfoForm() {
   const [validationTrigger, setValidationTrigger] = useState(0);
 
   // Dropdown states
-  const [yearSearch, setYearSearch] = useState("");
+  const [yearSearch, setYearSearch] = useState('');
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
-  const [makeSearch, setMakeSearch] = useState("");
+  const [makeSearch, setMakeSearch] = useState('');
   const [makeDropdownOpen, setMakeDropdownOpen] = useState(false);
-  const [modelSearch, setModelSearch] = useState("");
+  const [modelSearch, setModelSearch] = useState('');
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
-  const [typeSearch, setTypeSearch] = useState("");
+  const [typeSearch, setTypeSearch] = useState('');
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
 
   // Form setup with memoized default values
@@ -60,7 +60,7 @@ export default function ClientInfoForm() {
     model: vehicleInfo.model,
     plate: vehicleInfo.plate,
     type: vehicleInfo.type,
-    year: vehicleInfo.year || "",
+    year: vehicleInfo.year || '',
   }), [clientInfo, vehicleInfo]);
 
   const {
@@ -74,19 +74,19 @@ export default function ClientInfoForm() {
     defaultValues,
   });
 
-  const selectedContact = watch("contactName");
+  const selectedContact = watch('contactName');
 
   // Memoize fetchContacts to prevent recreation on every render
   const fetchContacts = useCallback(async () => {
     setContactsLoading(true);
     setContactsError(null);
     try {
-      const res = await fetch("/api/contacts");
-      if (!res.ok) throw new Error("Failed to fetch contacts");
+      const res = await fetch('/api/contacts');
+      if (!res.ok) throw new Error('Failed to fetch contacts');
       setContacts(await res.json());
     } catch (err) {
       setContactsError(
-        err instanceof Error ? err.message : "Failed to fetch contacts"
+        err instanceof Error ? err.message : 'Failed to fetch contacts',
       );
     } finally {
       setContactsLoading(false);
@@ -99,13 +99,13 @@ export default function ClientInfoForm() {
     email?: string;
     phone?: string;
   }) => {
-    const res = await fetch("/api/contacts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/contacts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: data.name,
-        email: data.email || "",
-        phone: data.phone || "",
+        email: data.email || '',
+        phone: data.phone || '',
       }),
     });
     const newContact = await res.json();
@@ -132,12 +132,12 @@ export default function ClientInfoForm() {
         year: data.year,
       });
       goToNextStep();
-      router.push("/appointment/step-2");
+      router.push('/appointment/step-2');
     } catch (err: unknown) {
       if (err instanceof Error) {
         setSubmitError(err.message);
       } else {
-        setSubmitError("Failed to submit");
+        setSubmitError('Failed to submit');
       }
     } finally {
       setSubmitLoading(false);
@@ -145,7 +145,7 @@ export default function ClientInfoForm() {
   }, [setClientInfo, setVehicleInfo, goToNextStep, router]);
 
   // Memoize onError
-  const onError = useCallback((errors: any) => {
+  const onError = useCallback((_errors: any) => {
     setValidationTrigger(prev => prev + 1);
   }, []);
 
@@ -163,8 +163,8 @@ export default function ClientInfoForm() {
     if (selectedContact) {
       const found = contacts.find((c) => c.id === selectedContact);
       if (found) {
-        setValue("email", found.email || "");
-        setValue("phone", found.phone || "");
+        setValue('email', found.email || '');
+        setValue('phone', found.phone || '');
         setManual(false);
       }
     }
@@ -175,7 +175,7 @@ export default function ClientInfoForm() {
   }, [defaultValues, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit, onError)}>
       {/* Contact Selection */}
       <div>
         <label className="block mb-1 font-bold text-md text-gray-100">
@@ -187,17 +187,16 @@ export default function ClientInfoForm() {
           <div className="text-red-500 text-sm">{contactsError}</div>
         ) : (
           <ContactField
-            control={control}
-            errors={errors}
             contacts={contacts}
             contactsLoading={contactsLoading}
-            contactsError={contactsError}
-            onAddContact={handleAddContact}
+            control={control}
+            errors={errors}
             newContactId={newContactId}
-            setValue={setValue}
             setManual={setManual}
             setNewContactId={setNewContactId}
+            setValue={setValue}
             validationTrigger={validationTrigger}
+            onAddContact={handleAddContact}
           />
         )}
       </div>
@@ -210,9 +209,8 @@ export default function ClientInfoForm() {
               Contact Name <span className="text-red-500">*</span>
             </label>
             <Controller
-              name="contactName"
               control={control}
-              rules={{ required: "Please enter contact name" }}
+              name="contactName"
               render={({ field }) => (
                 <>
                   <input
@@ -228,6 +226,7 @@ export default function ClientInfoForm() {
                   )}
                 </>
               )}
+              rules={{ required: 'Please enter contact name' }}
             />
           </div>
           <ManualContactFields control={control} errors={errors} validationTrigger={validationTrigger} />
@@ -241,54 +240,54 @@ export default function ClientInfoForm() {
       <div className="bg-[#18181B] rounded-lg p-4 border-1 border-gray-600">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           <VehicleField
-            name="year"
             control={control}
             errors={errors}
-            manualVehicle={manualVehicle}
-            search={yearSearch}
-            onSearchChange={setYearSearch}
             isOpen={yearDropdownOpen}
-            onToggle={setYearDropdownOpen}
             label="Year"
+            manualVehicle={manualVehicle}
+            name="year"
+            search={yearSearch}
             validationTrigger={validationTrigger}
+            onSearchChange={setYearSearch}
+            onToggle={setYearDropdownOpen}
           />
           <VehicleField
-            name="make"
             control={control}
             errors={errors}
-            manualVehicle={manualVehicle}
-            search={makeSearch}
-            onSearchChange={setMakeSearch}
             isOpen={makeDropdownOpen}
-            onToggle={setMakeDropdownOpen}
             label="Make"
+            manualVehicle={manualVehicle}
+            name="make"
+            search={makeSearch}
             validationTrigger={validationTrigger}
+            onSearchChange={setMakeSearch}
+            onToggle={setMakeDropdownOpen}
           />
         </div>
         <div className="grid grid-cols-1 gap-4 w-full mt-4">
           <VehicleField
-            name="model"
             control={control}
             errors={errors}
-            manualVehicle={manualVehicle}
-            search={modelSearch}
-            onSearchChange={setModelSearch}
             isOpen={modelDropdownOpen}
-            onToggle={setModelDropdownOpen}
             label="Model"
+            manualVehicle={manualVehicle}
+            name="model"
+            search={modelSearch}
             validationTrigger={validationTrigger}
+            onSearchChange={setModelSearch}
+            onToggle={setModelDropdownOpen}
           />
           <VehicleField
-            name="type"
             control={control}
             errors={errors}
-            manualVehicle={manualVehicle}
-            search={typeSearch}
-            onSearchChange={setTypeSearch}
             isOpen={typeDropdownOpen}
-            onToggle={setTypeDropdownOpen}
             label="Vehicle Type"
+            manualVehicle={manualVehicle}
+            name="type"
+            search={typeSearch}
             validationTrigger={validationTrigger}
+            onSearchChange={setTypeSearch}
+            onToggle={setTypeDropdownOpen}
           />
         </div>
       </div>
@@ -297,8 +296,8 @@ export default function ClientInfoForm() {
       {!manualVehicle && (
         <div className="mt-2">
           <button
-            type="button"
             className="text-blue-400 text-sm hover:text-blue-600"
+            type="button"
             onClick={handleManualVehicleToggle}
           >
             Can&apos;t find a vehicle? Enter it manually.
@@ -308,8 +307,8 @@ export default function ClientInfoForm() {
       {manualVehicle && (
         <div className="mt-4">
           <button
-            type="button"
             className="text-blue-400 text-sm hover:text-blue-600"
+            type="button"
             onClick={handleManualVehicleToggle}
           >
             I prefer to pick from the available Vehicle options.
@@ -320,12 +319,12 @@ export default function ClientInfoForm() {
       {/* Submit Button */}
       <div className="flex justify-end mt-6">
         <button
-          type="submit"
           className="bg-blue-500 hover:bg-blue-600 h-12 w-[62px] text-white font-bold rounded-lg text-sm"
-          style={{ minWidth: "62px" }}
           disabled={submitLoading}
+          style={{ minWidth: '62px' }}
+          type="submit"
         >
-          {submitLoading ? "..." : "Next"}
+          {submitLoading ? '...' : 'Next'}
         </button>
       </div>
       {submitError && (

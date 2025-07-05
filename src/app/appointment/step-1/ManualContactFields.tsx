@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Controller, ControllerRenderProps } from "react-hook-form";
+import React from 'react';
+import { Controller, ControllerRenderProps } from 'react-hook-form';
 
 interface ManualContactFieldsProps {
   control: any;
@@ -20,13 +20,12 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
           Email <span className="text-red-500">*</span>
         </label>
         <Controller
-          name="email"
           control={control}
-          rules={{ required: "Please enter an email" }}
+          name="email"
           render={({
             field,
           }: {
-            field: ControllerRenderProps<any, "email">;
+            field: ControllerRenderProps<any, 'email'>;
           }) => (
             <>
               <input
@@ -42,6 +41,7 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
               )}
             </>
           )}
+          rules={{ required: 'Please enter an email' }}
         />
       </div>
       <div>
@@ -49,13 +49,12 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
           Phone <span className="text-red-500">*</span>
         </label>
         <Controller
-          name="phone"
           control={control}
-          rules={{ required: "Please enter a phone number" }}
+          name="phone"
           render={({
             field,
           }: {
-            field: ControllerRenderProps<any, "phone">;
+            field: ControllerRenderProps<any, 'phone'>;
           }) => (
             <>
               <input
@@ -71,6 +70,7 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
               )}
             </>
           )}
+          rules={{ required: 'Please enter a phone number' }}
         />
       </div>
     </div>
@@ -87,4 +87,4 @@ export default React.memo(ManualContactFields, (prevProps, nextProps) => {
     return false;
   }
   return true;
-}); 
+});

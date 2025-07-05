@@ -1,10 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
-import type { Metadata } from "next";
+import Link from 'next/link';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Vehicle Service Booking System",
-  description: "Professional vehicle service booking and management system",
+  title: 'Vehicle Service Booking System',
+  description: 'Professional vehicle service booking and management system',
 };
 
 // Force static generation
@@ -19,22 +18,22 @@ export default function Home() {
         <h1 className="text-4xl md:text-5xl font-bold text-white m-10">
           Vehicle Service Booking System
         </h1>
-        
+
         <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-          Streamline your vehicle service appointments with our professional booking system. 
+          Streamline your vehicle service appointments with our professional booking system.
           Easy scheduling, client management, and service tracking all in one place.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Link
-            href="/appointment/step-1"
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-lg transition-colors text-lg"
+            href="/appointment/step-1"
           >
             Book Appointment
           </Link>
           <Link
-            href="/appointment/step-1"
             className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-4 px-8 rounded-lg transition-colors text-lg"
+            href="/appointment/step-1"
           >
             View Services
           </Link>

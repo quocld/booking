@@ -82,8 +82,8 @@ export const useBookingStore = create<BookingState>()(
           state.setHasHydrated(true);
         }
       },
-    }
-  )
+    },
+  ),
 );
 
 // Optimized selectors to prevent unnecessary re-renders
@@ -96,11 +96,11 @@ export const useVehicleInfo = () => useBookingStore(
 );
 
 export const useStep = () => useBookingStore(
-  (state) => state.step
+  (state) => state.step,
 );
 
 export const useHasHydrated = () => useBookingStore(
-  (state) => state._hasHydrated
+  (state) => state._hasHydrated,
 );
 
 export const useBookingActions = () => useBookingStore(
@@ -111,5 +111,5 @@ export const useBookingActions = () => useBookingStore(
     resetBooking: state.resetBooking,
     setStep: state.setStep,
     setHasHydrated: state.setHasHydrated,
-  })
-); 
+  }),
+);

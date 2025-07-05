@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useMemo, useCallback } from "react";
-import { Controller, ControllerRenderProps } from "react-hook-form";
-import SearchableDropdown from "../../../components/SearchableDropdown";
-import { VEHICLE_MAKES, VEHICLE_MODELS, VEHICLE_TYPES, VEHICLE_YEARS, filterOptions } from "../constants";
+import React, { useMemo, useCallback } from 'react';
+import { Controller, ControllerRenderProps } from 'react-hook-form';
+import SearchableDropdown from '../../../components/SearchableDropdown';
+import { VEHICLE_MAKES, VEHICLE_MODELS, VEHICLE_TYPES, VEHICLE_YEARS, filterOptions } from '../constants';
 
 interface VehicleFieldProps {
-  name: "year" | "make" | "model" | "type";
+  name: 'year' | 'make' | 'model' | 'type';
   control: any;
   errors: any;
   manualVehicle: boolean;
@@ -37,14 +37,9 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
       model: VEHICLE_MODELS,
       type: VEHICLE_TYPES,
     }[name];
-    
+
     return filterOptions(options, search);
   }, [name, search]);
-
-  // Memoize the onSelect handler
-  const handleSelect = useCallback((value: string) => {
-    // This will be handled by the Controller
-  }, []);
 
   // Memoize the search change handler
   const handleSearchChange = useCallback((newSearch: string) => {
@@ -58,17 +53,8 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
 
   return (
     <Controller
-      name={name}
       control={control}
-      rules={{ 
-        required: `Please select a ${name}`,
-        validate: (value) => {
-          if (!value || value.trim() === '') {
-            return `Please select a ${name}`;
-          }
-          return true;
-        }
-      }}
+      name={name}
       render={({ field }: { field: ControllerRenderProps<any, typeof name> }) => {
         if (manualVehicle) {
           return (
@@ -90,18 +76,27 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
 
         return (
           <SearchableDropdown
-            value={field.value || ""}
-            onSelect={field.onChange}
+            error={errors[name]?.message}
+            isOpen={isOpen}
+            label={label}
             options={filteredOptions}
             placeholder="Select"
-            isOpen={isOpen}
-            onToggle={handleToggle}
             search={search}
+            value={field.value || ''}
             onSearchChange={handleSearchChange}
-            label={label}
-            error={errors[name]?.message}
+            onSelect={field.onChange}
+            onToggle={handleToggle}
           />
         );
+      }}
+      rules={{
+        required: `Please select a ${name}`,
+        validate: (value) => {
+          if (!value || value.trim() === '') {
+            return `Please select a ${name}`;
+          }
+          return true;
+        },
       }}
     />
   );
@@ -125,4 +120,4 @@ export default React.memo(VehicleField, (prevProps, nextProps) => {
     return false;
   }
   return true;
-}); 
+});

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo } from 'react';
 import {
   Dialog,
   DialogPanel,
   DialogTitle,
   Transition,
   TransitionChild,
-} from "@headlessui/react";
-import { useBookingStore } from "./bookingStore";
-import AddContactModal from "./AddContactModal";
+} from '@headlessui/react';
+import { useBookingStore } from './bookingStore';
+import AddContactModal from './AddContactModal';
 
 export interface Contact {
   id: string;
@@ -36,7 +36,7 @@ export default function ContactPickerModal({
   onAddContact,
 }: ContactPickerModalProps) {
   const setClientInfo = useBookingStore((s) => s.setClientInfo);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
@@ -45,7 +45,7 @@ export default function ContactPickerModal({
       (c) =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.email.toLowerCase().includes(search.toLowerCase()) ||
-        c.phone.includes(search)
+        c.phone.includes(search),
     );
   }, [search, contacts]);
 
@@ -66,7 +66,7 @@ export default function ContactPickerModal({
   };
 
   return (
-    <Transition show={open} as={Fragment}>
+    <Transition as={Fragment} show={open}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
         <TransitionChild
           as={Fragment}
@@ -107,9 +107,9 @@ export default function ContactPickerModal({
                     viewBox="0 0 24 24"
                   >
                     <path
+                      d="M6 18L18 6M6 6l12 12"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
                 </button>
@@ -132,33 +132,33 @@ export default function ContactPickerModal({
                         strokeWidth="2"
                       />
                       <line
-                        x1="21"
-                        y1="21"
-                        x2="16.65"
-                        y2="16.65"
                         stroke="currentColor"
-                        strokeWidth="2"
                         strokeLinecap="round"
+                        strokeWidth="2"
+                        x1="21"
+                        x2="16.65"
+                        y1="21"
+                        y2="16.65"
                       />
                     </svg>
                   </span>
                   <input
-                    type="text"
+                    className="w-full bg-gray-700 border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                     placeholder="Search by name, phone number or email"
+                    type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-gray-700 border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                   />
                 </div>
                 <button
-                  type="button"
                   aria-label="Add Contact"
-                  title="Add Contact"
-                  onClick={() => setAddModalOpen(true)}
                   className="flex items-center justify-center rounded-lg h-12 w-12 border-2 border-blue-400 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ml-2"
+                  title="Add Contact"
+                  type="button"
+                  onClick={() => setAddModalOpen(true)}
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               </div>
@@ -180,16 +180,16 @@ export default function ContactPickerModal({
                         {filteredContacts.map((contact) => (
                           <tr
                             key={contact.id}
+                            aria-selected={selectedId === contact.id}
                             className={`cursor-pointer transition-colors h-[60px] ${
                               selectedId === contact.id
-                                ? "bg-blue-800/60 text-white font-semibold"
-                                : "hover:bg-gray-800 text-gray-100"
+                                ? 'bg-blue-800/60 text-white font-semibold'
+                                : 'hover:bg-gray-800 text-gray-100'
                             } rounded-lg`}
-                            onClick={() => setSelectedId(contact.id)}
-                            aria-selected={selectedId === contact.id}
                             tabIndex={0}
+                            onClick={() => setSelectedId(contact.id)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ")
+                              if (e.key === 'Enter' || e.key === ' ')
                                 setSelectedId(contact.id);
                             }}
                           >
@@ -199,16 +199,16 @@ export default function ContactPickerModal({
                             <td className="px-5 py-3 text-center">
                               <label className="inline-flex items-center cursor-pointer relative">
                                 <input
-                                  type="checkbox"
-                                  checked={selectedId === contact.id}
-                                  onChange={() => setSelectedId(contact.id)}
                                   aria-label={`Select ${contact.name}`}
+                                  checked={selectedId === contact.id}
                                   className="appearance-none h-4 w-4 bg-gray-700 checked:bg-blue-600 border-gray-600 rounded focus:ring-blue-500"
+                                  type="checkbox"
+                                  onChange={() => setSelectedId(contact.id)}
                                 />
                                 {selectedId === contact.id && (
                                   <span className="absolute left-0 top-0 flex items-center justify-center h-4 w-4 pointer-events-none">
                                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                   </span>
                                 )}
@@ -219,8 +219,8 @@ export default function ContactPickerModal({
                         {filteredContacts.length === 0 && (
                           <tr>
                             <td
-                              colSpan={4}
                               className="px-5 py-6 text-center text-gray-500"
+                              colSpan={4}
                             >
                               No contacts found.
                             </td>
@@ -233,17 +233,17 @@ export default function ContactPickerModal({
               </div>
               <div className="flex justify-between items-center px-6 py-4 gap-2">
                 <button
-                  type="button"
                   className="px-4 py-2 rounded bg-[#18181B] border-1 border-color-blue-500 text-blue-500 transition-colors"
+                  type="button"
                   onClick={onClose}
                 >
                   Cancel
                 </button>
                 <button
-                  type="button"
                   className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
-                  onClick={handleConfirm}
                   disabled={!selectedId}
+                  type="button"
+                  onClick={handleConfirm}
                 >
                   Select
                 </button>
@@ -255,11 +255,11 @@ export default function ContactPickerModal({
       {addModalOpen && (
         <AddContactModal
           open={addModalOpen}
-          onClose={() => setAddModalOpen(false)}
           onAddContact={async (data) => {
             await onAddContact(data);
             setAddModalOpen(false);
           }}
+          onClose={() => setAddModalOpen(false)}
         />
       )}
     </Transition>

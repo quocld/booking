@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 
 export interface SelectOption {
   label: string;
@@ -15,7 +15,7 @@ interface SelectProps {
 
 const Select: React.FC<SelectProps> = ({ label, value, onChange, options, placeholder }) => {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,38 +24,38 @@ const Select: React.FC<SelectProps> = ({ label, value, onChange, options, placeh
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const filtered = options.filter(opt =>
-    opt.label.toLowerCase().includes(search.toLowerCase())
+    opt.label.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const selectedLabel = options.find(opt => opt.value === value)?.label || "";
+  const selectedLabel = options.find(opt => opt.value === value)?.label || '';
 
   return (
-    <div className="w-full" ref={ref}>
+    <div ref={ref} className="w-full">
       {label && <label className="block text-sm font-medium mb-1 text-gray-300">{label}</label>}
       <input
+        readOnly
+        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        placeholder={placeholder}
         type="text"
         value={selectedLabel}
-        placeholder={placeholder}
-        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        readOnly
-        onFocus={() => setOpen(true)}
         onClick={() => setOpen(true)}
+        onFocus={() => setOpen(true)}
       />
       {open && (
         <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
           <div className="p-2">
             <input
+              autoFocus
+              className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+              placeholder="Search..."
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search..."
-              className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-              autoFocus
             />
           </div>
           {filtered.length > 0 ? (
@@ -65,7 +65,7 @@ const Select: React.FC<SelectProps> = ({ label, value, onChange, options, placeh
                 className="px-3 py-2 cursor-pointer hover:bg-blue-600 hover:text-white"
                 onMouseDown={() => {
                   onChange(opt.value);
-                  setSearch("");
+                  setSearch('');
                   setOpen(false);
                 }}
               >
@@ -81,4 +81,4 @@ const Select: React.FC<SelectProps> = ({ label, value, onChange, options, placeh
   );
 };
 
-export default Select; 
+export default Select;

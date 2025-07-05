@@ -1,4 +1,4 @@
-import ClientInfoForm from "./ClientInfoForm";
+import ClientInfoForm from './ClientInfoForm';
 
 export default function Step1Page() {
   return (
@@ -6,4 +6,4 @@ export default function Step1Page() {
       <ClientInfoForm />
     </div>
   );
-} 
+}

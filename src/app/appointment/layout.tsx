@@ -1,36 +1,35 @@
-"use client";
-import React, { useEffect } from "react";
-import { useBookingStore } from "./bookingStore";
-import { usePathname } from "next/navigation";
+'use client';
+import React, { useEffect } from 'react';
+import { useBookingStore } from './bookingStore';
+import { usePathname } from 'next/navigation';
 
 const steps = [
-  { label: "Step 1", description: "Client Information" },
-  { label: "Step 2", description: "Services" },
-  { label: "Step 3", description: "Review & Send" },
+  { label: 'Step 1', description: 'Client Information' },
+  { label: 'Step 2', description: 'Services' },
+  { label: 'Step 3', description: 'Review & Send' },
 ];
 
 export default function AppointmentLayout({ children }: { children: React.ReactNode }) {
   const step = useBookingStore((state) => state.step);
   const hasHydrated = useBookingStore((state) => state._hasHydrated);
-  const stepDescription = steps.find((_, idx) => idx + 1 === step)?.description;
   const setStep = useBookingStore((state) => state.setStep);
   const pathname = usePathname();
 
   // Get step title from pathname to avoid flickering
   const getStepTitleFromPath = () => {
-    if (pathname.includes("step-1")) return "Client Information";
-    if (pathname.includes("step-2")) return "Services";
-    if (pathname.includes("step-3")) return "Review & Send";
-    return " ";
+    if (pathname.includes('step-1')) return 'Client Information';
+    if (pathname.includes('step-2')) return 'Services';
+    if (pathname.includes('step-3')) return 'Review & Send';
+    return ' ';
   };
 
   useEffect(() => {
     if (!hasHydrated) return;
-    
+
     // Map pathname to step
-    if (pathname.includes("step-1")) setStep(1);
-    else if (pathname.includes("step-2")) setStep(2);
-    else if (pathname.includes("step-3")) setStep(3);
+    if (pathname.includes('step-1')) setStep(1);
+    else if (pathname.includes('step-2')) setStep(2);
+    else if (pathname.includes('step-3')) setStep(3);
   }, [pathname, setStep, hasHydrated]);
 
   // Don't render until hydrated to prevent flickering
@@ -39,12 +38,12 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
       <div
         className="px-4 py-6 gap-4"
         style={{
-          background: "linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)"
+          background: 'linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)',
         }}
       >
         <div className="w-full h-[52px] text-2xl font-bold content-center">
           {/* Use a neutral title during hydration to prevent mismatch */}
-           
+
         </div>
         <div className="flex flex-col md:flex-row mt-4 gap-4">
           <div className="flex-1 bg-[#18181B] rounded-lg shadow-lg p-4">
@@ -54,7 +53,6 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
             <nav className="relative flex flex-col gap-5 w-full items-center mt-2">
               {steps.map((stepObj, idx) => {
                 // During hydration, show all steps as inactive to prevent mismatch
-                const isActive = false;
                 const isLast = idx === steps.length - 1;
                 return (
                   <div key={stepObj.label} className="flex flex-col items-center w-full relative z-10 group">
@@ -88,7 +86,7 @@ export default function AppointmentLayout({ children }: { children: React.ReactN
     <div
       className="px-4 py-6 gap-4"
       style={{
-        background: "linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)"
+        background: 'linear-gradient(to bottom, #2d6fcc 0%,  #0F0F0F 16%, #0F0F0F 100%)',
       }}
     >
       <div className="w-full h-[52px] text-2xl font-bold content-center">

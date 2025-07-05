@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback } from 'react';
 
 interface SearchableDropdownProps {
   value: string;
@@ -30,7 +30,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   // Memoize filtered options to prevent recalculation on every render
   const filteredOptions = useMemo(() => {
     return options.filter((option) =>
-      option.toLowerCase().includes(search.toLowerCase())
+      option.toLowerCase().includes(search.toLowerCase()),
     );
   }, [options, search]);
 
@@ -49,7 +49,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
 
   const handleOptionSelect = useCallback((option: string) => {
     onSelect(option);
-    onSearchChange("");
+    onSearchChange('');
     onToggle(false);
   }, [onSelect, onSearchChange, onToggle]);
 
@@ -60,17 +60,17 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
       </label>
       <div className="relative">
         <input
-          type="text"
-          value={value || ""}
-          onFocus={handleFocus}
-          onClick={handleClick}
-          placeholder={placeholder}
-          className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
           readOnly
+          className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
+          placeholder={placeholder}
+          type="text"
+          value={value || ''}
+          onClick={handleClick}
+          onFocus={handleFocus}
         />
         <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          <svg className="text-gray-400" fill="none" height="16" stroke="currentColor" viewBox="0 0 24 24" width="16">
+            <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
           </svg>
         </span>
         {isOpen && (
@@ -79,15 +79,15 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
               <div className="relative flex items-center">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <circle cx="11" cy="11" r="8"/>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <line x1="21" x2="16.65" y1="21" y2="16.65"/>
                 </svg>
                 <input
+                  autoFocus
+                  className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                  placeholder="Search"
                   type="text"
                   value={search}
                   onChange={handleSearchChange}
-                  placeholder="Search"
-                  className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                  autoFocus
                 />
               </div>
             </div>
@@ -128,4 +128,4 @@ export default React.memo(SearchableDropdown, (prevProps, nextProps) => {
     return false;
   }
   return true;
-}); 
+});
