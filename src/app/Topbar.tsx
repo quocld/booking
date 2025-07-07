@@ -18,9 +18,9 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
         className="absolute left-2 md:hidden p-2 rounded bg-gray-800 transition-colors"
         onClick={onMenuClick}
       >
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg fill="none" height="24" viewBox="0 0 24 24" width="24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#fff" strokeWidth="2"/></svg>
       </button>
-      <h1 className="text-lg font-bold size-4 w-full h-full">Create Appointment</h1>
+      <h1 className="h-full size-4 text-lg font-bold w-full">Create Appointment</h1>
     </header>
   );
 }

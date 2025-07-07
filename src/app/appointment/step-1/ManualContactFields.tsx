@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
+import { ClientInfoFormValues } from './ContactField';
 
 interface ManualContactFieldsProps {
-  control: any;
-  errors: any;
+  control: import('react-hook-form').Control<ClientInfoFormValues>;
+  errors: Partial<Record<keyof ClientInfoFormValues, { message?: string }>>;
   validationTrigger: number;
 }
 
@@ -25,7 +26,7 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
           render={({
             field,
           }: {
-            field: ControllerRenderProps<any, 'email'>;
+            field: ControllerRenderProps<ClientInfoFormValues, 'email'>;
           }) => (
             <>
               <input
@@ -54,7 +55,7 @@ const ManualContactFields: React.FC<ManualContactFieldsProps> = ({
           render={({
             field,
           }: {
-            field: ControllerRenderProps<any, 'phone'>;
+            field: ControllerRenderProps<ClientInfoFormValues, 'phone'>;
           }) => (
             <>
               <input

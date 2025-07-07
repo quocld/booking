@@ -145,7 +145,7 @@ export default function ClientInfoForm() {
   }, [setClientInfo, setVehicleInfo, goToNextStep, router]);
 
   // Memoize onError
-  const onError = useCallback((_errors: any) => {
+  const onError = useCallback((_errors: Record<string, unknown>) => {
     setValidationTrigger(prev => prev + 1);
   }, []);
 

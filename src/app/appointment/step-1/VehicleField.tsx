@@ -4,11 +4,12 @@ import React, { useMemo, useCallback } from 'react';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import { VEHICLE_MAKES, VEHICLE_MODELS, VEHICLE_TYPES, VEHICLE_YEARS, filterOptions } from '../constants';
+import { ClientInfoFormValues } from './ContactField';
 
 interface VehicleFieldProps {
-  name: 'year' | 'make' | 'model' | 'type';
-  control: any;
-  errors: any;
+  name: keyof Pick<ClientInfoFormValues, 'year' | 'make' | 'model' | 'type'>;
+  control: import('react-hook-form').Control<ClientInfoFormValues>;
+  errors: Partial<Record<keyof ClientInfoFormValues, { message?: string }>>;
   manualVehicle: boolean;
   search: string;
   onSearchChange: (search: string) => void;
@@ -55,7 +56,7 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
     <Controller
       control={control}
       name={name}
-      render={({ field }: { field: ControllerRenderProps<any, typeof name> }) => {
+      render={({ field }: { field: ControllerRenderProps<ClientInfoFormValues, typeof name> }) => {
         if (manualVehicle) {
           return (
             <>
@@ -76,7 +77,7 @@ const VehicleField: React.FC<VehicleFieldProps> = ({
 
         return (
           <SearchableDropdown
-            error={errors[name]?.message}
+            error={errors[name]?.message || ''}
             isOpen={isOpen}
             label={label}
             options={filteredOptions}

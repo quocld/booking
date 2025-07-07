@@ -5,7 +5,7 @@ import { Controller, ControllerRenderProps, UseFormSetValue } from 'react-hook-f
 import ContactSelect from '../ContactSelect';
 import type { Contact } from '../ContactPickerModal';
 
-interface ClientInfoFormValues {
+export interface ClientInfoFormValues {
   contactName: string;
   email: string;
   phone: string;
@@ -17,8 +17,8 @@ interface ClientInfoFormValues {
 }
 
 interface ContactFieldProps {
-  control: any;
-  errors: any;
+  control: import('react-hook-form').Control<ClientInfoFormValues>;
+  errors: Partial<Record<keyof ClientInfoFormValues, { message?: string }>>;
   contacts: Contact[];
   contactsLoading: boolean;
   onAddContact: (data: { name: string; email?: string; phone?: string }) => Promise<Contact>;
