@@ -53,12 +53,12 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
 
   // Memoize event handlers
   const handleFocus = useCallback(() => {
-    onToggle(true);
-  }, [onToggle]);
+    if (!isOpen) onToggle(true);
+  }, [onToggle, isOpen]);
 
   const handleClick = useCallback(() => {
-    onToggle(true);
-  }, [onToggle]);
+    onToggle(!isOpen);
+  }, [onToggle, isOpen]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
@@ -77,13 +77,14 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
       </label>
       <div className="relative">
         <input
+          autoFocus
           readOnly
           className="w-full h-12 bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer pr-10"
           placeholder={placeholder}
           type="text"
           value={value || ''}
-          onClick={handleClick}
           onFocus={handleFocus}
+          onMouseDown={handleClick}
         />
         <span className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}>
           <svg className="text-gray-400" fill="none" height="16" stroke="currentColor" viewBox="0 0 24 24" width="16">
@@ -91,7 +92,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
           </svg>
         </span>
         {isOpen && (
-          <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 rounded-xl max-h-72 overflow-auto animate-fade-in">
+          <div className="absolute z-20 mt-2 w-full bg-[#18181B] border-1 border-gray-700 scrollbar-rounded animate-fade-in">
             <div className="p-3 pb-0">
               <div className="relative flex items-center">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -108,7 +109,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                 />
               </div>
             </div>
-            <div className="pt-2">
+            <div className="pt-2 scroll-content">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => (
                   <div

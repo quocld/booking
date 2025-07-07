@@ -33,3 +33,35 @@ body {
 .filter-blue {
   filter: brightness(0) saturate(100%) invert(34%) sepia(99%) saturate(7490%) hue-rotate(203deg) brightness(97%) contrast(101%);
 }
+
+/* Custom dark scrollbar for all scrollable areas */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #18181B;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+::-webkit-scrollbar-corner {
+  background: #18181B;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #27272A #18181B;
+}
+
+.scrollbar-rounded {
+  overflow: hidden;
+  border-radius: 0.75rem; 
+}
+.scrollbar-rounded > .scroll-content {
+  overflow: auto;
+  max-height: 18rem;
+}
