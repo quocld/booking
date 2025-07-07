@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -23,17 +23,38 @@ const navItems = [
   { name: 'Invoices', href: '/invoices', icon: '/Newspaper.svg' },
 ];
 
-export default function Sidebar() {
-  const [hidden, setHidden] = useState(false);
+interface SidebarProps {
+  onClose?: () => void;
+  isMobile?: boolean;
+  hidden?: boolean;
+  onHiddenChange?: (hidden: boolean) => void;
+}
+
+export default function Sidebar({ onClose, isMobile, hidden = false, onHiddenChange }: SidebarProps) {
+  const [localHidden, setLocalHidden] = useState(hidden);
   const pathname = usePathname();
 
-  if (hidden) {
+  // Sync state with parent
+  React.useEffect(() => {
+    setLocalHidden(hidden);
+  }, [hidden]);
+
+  const handleHide = () => {
+    setLocalHidden(true);
+    if (onHiddenChange) onHiddenChange(true);
+  };
+  const handleShow = () => {
+    setLocalHidden(false);
+    if (onHiddenChange) onHiddenChange(false);
+  };
+
+  if (localHidden) {
     return (
-      <aside className="flex flex-col items-center h-full w-16 p-4 fixed left-0 top-0 bottom-0 z-20 transition-all">
+      <aside className="flex flex-col items-center h-full w-16 p-4 fixed left-0 top-0 bottom-0 z-20 transition-all border-r-1 border-gray-800">
         <button
           aria-label="Show sidebar"
           className="mb-6 mt-2 bg-gray-800 border border-gray-700 rounded-full p-1 shadow hover:bg-gray-700 transition-colors"
-          onClick={() => setHidden(false)}
+          onClick={handleShow}
         >
           <Image
             alt="Show sidebar"
@@ -54,6 +75,7 @@ export default function Sidebar() {
                   (isActive ? 'text-blue-500' : 'hover:bg-gray-800 text-gray-300')
                 }
                 href={item.href}
+                {...(typeof onClose === 'function' ? { onClick: (_e: MouseEvent<HTMLAnchorElement>) => { onClose(); } } : {})}
               >
                 <Image
                   alt={item.name + ' icon'}
@@ -95,6 +117,7 @@ export default function Sidebar() {
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white')
                   }
                   href={item.href}
+                  {...(typeof onClose === 'function' ? { onClick: (_e: MouseEvent<HTMLAnchorElement>) => { onClose(); } } : {})}
                 >
                   <Image
                     alt={item.name + ' icon'}
@@ -113,14 +136,14 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-      {/* Hide Sidebar Button */}
-      <div className="relative border-r-1 border-gray-800">
+      {/* Hide Sidebar Button - chỉ hiện trên desktop */}
+      <div className={`relative border-r-1 border-gray-800 ${isMobile ? 'hidden' : 'hidden md:block'}`}>
         <div className="relative border-b-1 border-gray-800">
           <button
             aria-label="Hide sidebar"
             className="absolute right-[16px] w-[24px] h-[24px] bg-gray-800 border-[1.5px] border-gray-700 rounded-full p-1 shadow hover:bg-gray-700 transition-colors z-30"
             style={{ top: 'unset', bottom: '-12px' }}
-            onClick={() => setHidden(true)}
+            onClick={handleHide}
           >
             <Image
               alt="Hide sidebar"
