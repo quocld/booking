@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useRef, useEffect } from 'react';
 
 interface SearchableDropdownProps {
   value: string;
@@ -34,6 +34,23 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
     );
   }, [options, search]);
 
+  // Ref for the dropdown container
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        onToggle(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
+
   // Memoize event handlers
   const handleFocus = useCallback(() => {
     onToggle(true);
@@ -54,7 +71,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   }, [onSelect, onSearchChange, onToggle]);
 
   return (
-    <div>
+    <div ref={containerRef}>
       <label className="block text-sm font-bold mb-1 text-gray-100">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -83,7 +100,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                 </svg>
                 <input
                   autoFocus
-                  className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                  className="w-full bg-gray-700 text-sm border-2 border-gray-700 rounded-lg pl-12 pr-3 py-3 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                   placeholder="Search"
                   type="text"
                   value={search}
@@ -96,14 +113,14 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                 filteredOptions.map((option) => (
                   <div
                     key={option}
-                    className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 text-base font-medium transition-colors duration-100"
+                    className="px-5 py-3 text-sm cursor-pointer hover:bg-blue-600 hover:text-white text-gray-100 font-medium transition-colors duration-100"
                     onMouseDown={() => handleOptionSelect(option)}
                   >
                     {option}
                   </div>
                 ))
               ) : (
-                <div className="px-5 py-3 text-gray-400 text-base">No options found</div>
+                <div className="px-5 py-3 text-gray-400">No options found</div>
               )}
             </div>
           </div>
